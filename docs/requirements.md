@@ -5,6 +5,7 @@
 - Frontend with React
 - Backend with Next.js
 - Supabase auth
+- PostgreSQL (on Supabase)
 - Vercel deployment
 
 ### Functional Requirements
@@ -17,7 +18,9 @@
 - [ ] Farmer can view only their submissions
 - [ ] Admin can view all submissions
 
-#### Safety form
+#### Farmer Dashboard
+
+##### Safety form
 - [ ] Select job site
 - [ ] Select date
 - [ ] Safety checklist: PPE word (hard hat, vest, boots, eye protection), fall protection in place, ladders/scaffolding inspected, tools and cords in good condition, hazards identified
@@ -28,7 +31,7 @@
 #### Admin dashboard
 - [ ] Lists submissions (worker, site, date and status)
 - [ ] Filter submissions (by site, worker, date range)
-- [ ] Detailed submission view for each submission
+- [ ] Detailed submission view for each submission (pictures, form data)
 - [ ] A summary section (e.g., submissions per site, who has not submitted today - including a few charts)
 
 ### Non functional requirements

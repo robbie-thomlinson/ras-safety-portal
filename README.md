@@ -1,15 +1,16 @@
 # RAS Site Safety
 
-Daily job site safety checklists for Ron Anderson & Sons Ltd. Farmers submit checklists; admins review them.
+Daily job site safety checklists for Ron Anderson & Sons Ltd. Farmers submit safety forms and admins review them.
 
 See [`docs/requirements.md`](docs/requirements.md) and the [ERD](docs/erd.png).
 
 ## Tech stack
 
 - Next.js (App Router) + React + TypeScript
-- Tailwind CSS v4 + shadcn/ui (Radix)
+- Tailwind CSS v4 + shadcn
 - React Hook Form + Zod for forms
-- Supabase (auth + Postgres), deployed on Vercel
+- Supabase (auth + Postgres)
+- Deployed on Vercel
 
 ## Setup
 
@@ -19,6 +20,17 @@ npm run dev
 ```
 
 Open http://localhost:3000.
+
+### Scripts
+
+Also available as VS Code tasks (`Terminal → Run Task`).
+
+- `node scripts/dev.mjs`: installs dependencies if needed, then starts the dev server
+- `npm run diagrams`: renders `docs/**/*.mmd` to PNG. On Ubuntu, add a gitignored `docs/puppeteer-config.json` containing `{ "args": ["--no-sandbox"] }`
+
+## Assumptions
+
+- Admins cannot fill in new safety forms, they are only responsible for reviewing them
 
 ## Project structure
 
@@ -34,9 +46,3 @@ src/
 public/brand/       # RAS logos
 ```
 
-## Design tokens
-
-Brand colors and fonts are taken from rasltd.ca and defined in `src/app/globals.css`.
-
-- **Colors**: `brand-green-{50..950}` (RAS green is 700), `brand-charcoal`, `brand-paper`, `brand-amber`. Components should use the semantic shadcn tokens (`primary`, `muted`, `success`, `warning`, ...) instead.
-- **Fonts** (by role): `font-heading` (Barlow Condensed, standing in for Gainsborough Sans) and `font-body` (Nunito Sans, standing in for Omnes Pro). `h1`–`h4` get the heading style automatically.

@@ -20,18 +20,28 @@ Requires Docker (for local Supabase).
 npm install
 npm run db:start              # local Supabase, migrated and seeded
 cp .env.example .env.local    # set NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY from `npx supabase status`
+npm run db:demo               # optional: two weeks of demo forms for the dashboards
 npm run dev
 ```
 
-Open http://localhost:3000.
+Open http://localhost:3000 and sign in with a seeded account (password `password123` for all):
 
-Tests (with Supabase running): `npm test` for unit and integration, `npm run test:db` for the database RLS tests.
+- Farmer: `farmer@ras.test` (also `priya.sandhu@`, `tom.bergstrom@`, `mei.chen@`)
+- Admin: `admin@ras.test` (also `dana.whitfield@`)
+
+### Tests
+
+With Supabase running:
+
+- `npm test`: unit tests, component tests (jsdom) and integration tests against the local database
+- `npm run test:db`: the database RLS tests. These expect no forms in the database, so run `npm run db:reset` first if you've loaded demo data
 
 ### Scripts
 
 Also available as VS Code tasks (`Terminal → Run Task`).
 
 - `node scripts/dev.mjs`: installs dependencies if needed, then starts the dev server
+- `npm run db:demo`: adds demo forms (with photos and some reviews) through the same path the app uses. Run `npm run db:reset` first for a clean slate
 - `npm run diagrams`: renders `docs/**/*.mmd` to PNG. On Ubuntu, add a gitignored `docs/puppeteer-config.json` containing `{ "args": ["--no-sandbox"] }`
 
 ## Assumptions
@@ -44,12 +54,16 @@ Also available as VS Code tasks (`Terminal → Run Task`).
 ```
 src/
   app/              # routes and layouts only; keep these thin
-  features/         # feature modules (components, actions, schemas per feature)
+    login/
+    (app)/          # signed-in pages: home/dashboard, submissions, job sites
+  features/         # feature modules (components, actions, data, schemas per feature)
     auth/
     safety-forms/
+    job-sites/
     dashboard/
-  components/ui/    # shadcn/ui primitives
-  lib/              # shared utilities (fonts, cn, ...)
+  components/       # app-wide components (header, page header, date picker, ...)
+    ui/             # shadcn/ui primitives
+  lib/              # shared utilities (dates, fonts, cn, ...)
     supabase/       # Supabase clients and generated database types
 supabase/
   migrations/       # schema, RLS policies and storage bucket

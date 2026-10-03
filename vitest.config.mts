@@ -19,6 +19,16 @@ export default defineConfig({
         test: { name: "unit", include: ["src/**/*.test.ts"], exclude: ["src/**/*.int.test.ts"] },
       },
       {
+        // React components in a simulated browser. Server actions and Supabase are mocked.
+        extends: true,
+        test: {
+          name: "components",
+          include: ["src/**/*.test.tsx"],
+          environment: "jsdom",
+          setupFiles: ["src/test/setup-dom.ts"],
+        },
+      },
+      {
         // Runs against the local Supabase stack (`npm run db:start`) as the seeded users.
         extends: true,
         test: {

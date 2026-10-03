@@ -92,6 +92,10 @@ describe("formFiltersSchema", () => {
     expect(formFiltersSchema.safeParse({ from: "2026-10-05", to: "2026-10-01" }).success).toBe(false)
   })
 
+  it("accepts the seeded worker ids, which aren't RFC 4122 uuids", () => {
+    expect(formFiltersSchema.parse({ workerId: "33333333-3333-3333-3333-333333333333" }).workerId).toBeDefined()
+  })
+
   it("rejects a worker id that isn't a uuid", () => {
     expect(formFiltersSchema.safeParse({ workerId: "1 or 1=1" }).success).toBe(false)
   })

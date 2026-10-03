@@ -19,6 +19,16 @@ export const CHECKLIST_ITEMS = {
 
 export type ChecklistItem = keyof typeof CHECKLIST_ITEMS
 
+// How the checklist is grouped on the form and the detail page.
+export const CHECKLIST_SECTIONS: { title: string; items: ChecklistItem[] }[] = [
+  { title: "PPE worn", items: ["hardHatWorn", "vestWorn", "bootsWorn", "eyeProtectionWorn"] },
+  {
+    title: "Equipment",
+    items: ["fallProtectionInspected", "scaffoldingInspected", "laddersInspected", "toolsInspected", "cordsInspected"],
+  },
+  { title: "Site", items: ["hazardsIdentified"] },
+]
+
 const checklistAnswer = z.boolean({ error: "Answer this checklist item" })
 
 const isoDate = z.iso.date({ error: "Choose a date" })
@@ -50,18 +60,22 @@ export const safetyFormSchema = z.object({
 export type SafetyFormInput = z.input<typeof safetyFormSchema>
 export type SafetyFormValues = z.output<typeof safetyFormSchema>
 
+export const formStatusSchema = z.enum(["submitted", "reviewed"])
+
 export const reviewSchema = z.object({
   formId: z.coerce.number().int().positive(),
-  status: z.enum(["submitted", "reviewed"]),
+  status: formStatusSchema,
 })
 
 // Admin list filters, usually read from search params.
 export const formFiltersSchema = z
   .object({
     jobSiteId: z.coerce.number().int().positive().optional(),
-    workerId: z.uuid().optional(),
+    // guid, not uuid: Postgres accepts any 8-4-4-4-12 hex id, and z.uuid() also checks RFC version bits.
+    workerId: z.guid().optional(),
     from: isoDate.optional(),
     to: isoDate.optional(),
+    status: formStatusSchema.optional(),
   })
   .refine((f) => !f.from || !f.to || f.from <= f.to, { message: "Start date must be before end date", path: ["to"] })
 

@@ -1,10 +1,11 @@
 import "server-only"
 
 import { UserFacingError } from "@/lib/action-result"
+import type { Tables } from "@/lib/supabase/database.types"
 import type { Client } from "@/lib/supabase/types"
 
 import { MAX_PHOTOS, PHOTO_BUCKET } from "./photos"
-import type { FormFilters, SafetyFormValues } from "./schemas"
+import type { ChecklistItem, FormFilters, SafetyFormValues } from "./schemas"
 
 // Signed photo URLs last long enough to view a submission, not to share one around.
 const PHOTO_URL_TTL_SECONDS = 60 * 60
@@ -59,7 +60,7 @@ const LIST_COLUMNS = `
 `
 
 // RLS limits farmers to their own forms, so the same query serves both dashboards.
-export async function listSafetyForms(supabase: Client, filters: FormFilters = {}) {
+export async function listSafetyForms(supabase: Client, filters: FormFilters = {}, { limit }: { limit?: number } = {}) {
   let query = supabase
     .from("safety_forms")
     .select(LIST_COLUMNS)
@@ -70,6 +71,8 @@ export async function listSafetyForms(supabase: Client, filters: FormFilters = {
   if (filters.workerId) query = query.eq("worker_id", filters.workerId)
   if (filters.from) query = query.gte("date", filters.from)
   if (filters.to) query = query.lte("date", filters.to)
+  if (filters.status) query = query.eq("status", filters.status)
+  if (limit) query = query.limit(limit)
 
   const { data, error } = await query
   if (error) throw error
@@ -120,18 +123,7 @@ export async function getSafetyForm(supabase: Client, id: number) {
       id: form.worker.id,
       name: `${form.worker.first_name} ${form.worker.last_name}`.trim(),
     },
-    checklist: {
-      hardHatWorn: form.hard_hat_worn,
-      vestWorn: form.vest_worn,
-      bootsWorn: form.boots_worn,
-      eyeProtectionWorn: form.eye_protection_worn,
-      fallProtectionInspected: form.fall_protection_inspected,
-      scaffoldingInspected: form.scaffolding_inspected,
-      laddersInspected: form.ladders_inspected,
-      toolsInspected: form.tools_inspected,
-      cordsInspected: form.cords_inspected,
-      hazardsIdentified: form.hazards_identified,
-    },
+    checklist: toChecklist(form),
     notes: form.notes,
     // Farmers can't read other profiles, so they see that a form was reviewed but not by whom.
     review: form.reviewed_at
@@ -149,6 +141,41 @@ export async function getSafetyForm(supabase: Client, id: number) {
 }
 
 export type SafetyFormDetail = NonNullable<Awaited<ReturnType<typeof getSafetyForm>>>
+
+export const CHECKLIST_COLUMNS = `
+  hard_hat_worn, vest_worn, boots_worn, eye_protection_worn,
+  fall_protection_inspected, scaffolding_inspected, ladders_inspected,
+  tools_inspected, cords_inspected, hazards_identified
+`
+
+type ChecklistRow = Pick<
+  Tables<"safety_forms">,
+  | "hard_hat_worn"
+  | "vest_worn"
+  | "boots_worn"
+  | "eye_protection_worn"
+  | "fall_protection_inspected"
+  | "scaffolding_inspected"
+  | "ladders_inspected"
+  | "tools_inspected"
+  | "cords_inspected"
+  | "hazards_identified"
+>
+
+export function toChecklist(row: ChecklistRow): Record<ChecklistItem, boolean> {
+  return {
+    hardHatWorn: row.hard_hat_worn,
+    vestWorn: row.vest_worn,
+    bootsWorn: row.boots_worn,
+    eyeProtectionWorn: row.eye_protection_worn,
+    fallProtectionInspected: row.fall_protection_inspected,
+    scaffoldingInspected: row.scaffolding_inspected,
+    laddersInspected: row.ladders_inspected,
+    toolsInspected: row.tools_inspected,
+    cordsInspected: row.cords_inspected,
+    hazardsIdentified: row.hazards_identified,
+  }
+}
 
 // For the admin worker filter.
 export async function listWorkers(supabase: Client) {

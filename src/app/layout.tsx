@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "RAS Site Safety",
+  title: { default: "RAS Site Safety", template: "%s · RAS Site Safety" },
   description: "Daily job site safety checklists for Ron Anderson & Sons Ltd.",
 }
 

@@ -167,6 +167,9 @@ describe("reading", () => {
     const byDate = await listSafetyForms(admin, { from: "2026-09-16", to: "2026-09-16" })
     expect(byDate.map((f) => f.id)).toContain(otherFormId)
     expect(byDate.every((f) => f.date === "2026-09-16")).toBe(true)
+
+    const awaiting = await listSafetyForms(admin, { status: "submitted" })
+    expect(awaiting.every((f) => f.status === "submitted")).toBe(true)
   })
 
   it("lists farmers (not admins) for the worker filter", async () => {

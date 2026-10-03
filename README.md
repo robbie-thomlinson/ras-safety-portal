@@ -48,6 +48,7 @@ Also available as VS Code tasks (`Terminal → Run Task`).
 
 - Admins cannot fill in new safety forms, they are only responsible for reviewing them
 - There is no self sign-up - accounts are created in Supabase (dashboard or admin API)
+- A user's role comes from `role` in their `app_metadata` (`farmer` if unset), which only the admin API or SQL can change. Changing it updates their profile
 
 ## Project structure
 

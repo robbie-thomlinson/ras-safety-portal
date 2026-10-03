@@ -1,30 +1,35 @@
 erDiagram
-    User ||--o{ SafetyForm : submits
-    User |o--o{ SafetyForm : reviews
+    AuthUser ||--|| Profile : has
+    Profile ||--o{ SafetyForm : submits
+    Profile |o--o{ SafetyForm : reviews
     JobSite ||--o{ SafetyForm : "is for"
     SafetyForm ||--|{ SafetyFormPhoto : has
 
-    User {
-        int id PK
-        string role
+    AuthUser {
+        uuid id PK
+        string email
+    }
+
+    Profile {
+        uuid id PK, FK
+        enum role
         string first_name
         string last_name
         timestamp created_at
     }
 
     JobSite {
-        int id PK
-        string address
+        bigint id PK
         string name
+        string address
         timestamp created_at
     }
 
     SafetyForm {
-        int id PK
-        int worker_id FK
-        int jobsite_id FK
+        bigint id PK
+        uuid worker_id FK
+        bigint job_site_id FK
         date date
-        bool ppe_worn
         bool hard_hat_worn
         bool vest_worn
         bool boots_worn
@@ -36,15 +41,15 @@ erDiagram
         bool cords_inspected
         bool hazards_identified
         string notes
-        string status
-        int reviewed_by FK
+        enum status
+        uuid reviewed_by FK
         timestamp reviewed_at
         timestamp created_at
     }
 
     SafetyFormPhoto {
-        int id PK
-        int safety_form_id FK
+        bigint id PK
+        bigint safety_form_id FK
         string path
         string content_type
         int size_bytes

@@ -14,12 +14,18 @@ See [`docs/requirements.md`](docs/requirements.md) and the [ERD](docs/erd.png).
 
 ## Setup
 
+Requires Docker (for local Supabase).
+
 ```bash
 npm install
+npm run db:start              # local Supabase, migrated and seeded
+cp .env.example .env.local    # set NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY from `npx supabase status`
 npm run dev
 ```
 
 Open http://localhost:3000.
+
+Tests (with Supabase running): `npm test` for unit and integration, `npm run test:db` for the database RLS tests.
 
 ### Scripts
 

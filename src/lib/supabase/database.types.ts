@@ -25,13 +25,13 @@ export type Database = {
           Tables: {
             "job_sites": {
                   Row: {
-                    "address": string,"created_at": string,"id": number,"name": string
+                    "address": string,"archived_at": string | null,"created_at": string,"id": number,"name": string
                   }
                   Insert: {
-                    "address": string,"created_at"?: string,"id"?: never,"name": string
+                    "address": string,"archived_at"?: string | null,"created_at"?: string,"id"?: never,"name": string
                   }
                   Update: {
-                    "address"?: string,"created_at"?: string,"id"?: never,"name"?: string
+                    "address"?: string,"archived_at"?: string | null,"created_at"?: string,"id"?: never,"name"?: string
                   }
                   Relationships: [
                     
@@ -107,6 +107,9 @@ isOneToOne: false
           Functions: {
             "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"submit_safety_form":
+{ Args: { "p_boots_worn": boolean,"p_cords_inspected": boolean,"p_date": string,"p_eye_protection_worn": boolean,"p_fall_protection_inspected": boolean,"p_hard_hat_worn": boolean,"p_hazards_identified": boolean,"p_job_site_id": number,"p_ladders_inspected": boolean,"p_notes": string,"p_photo_paths": (string)[],"p_scaffolding_inspected": boolean,"p_tools_inspected": boolean,"p_vest_worn": boolean }; Returns: number
                            }
           }
           Enums: {

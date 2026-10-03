@@ -31,6 +31,7 @@ Also available as VS Code tasks (`Terminal → Run Task`).
 ## Assumptions
 
 - Admins cannot fill in new safety forms, they are only responsible for reviewing them
+- There is no self sign-up - accounts are created in Supabase (dashboard or admin API)
 
 ## Project structure
 
@@ -43,6 +44,13 @@ src/
     dashboard/
   components/ui/    # shadcn/ui primitives
   lib/              # shared utilities (fonts, cn, ...)
+    supabase/       # Supabase clients and generated database types
+supabase/
+  migrations/       # schema, RLS policies and storage bucket
+  seed.sql          # local demo data (job sites, farmer and admin logins)
+  config.toml       # local Supabase settings
+scripts/            # dev and diagram helpers
+docs/               # requirements and ERD
 public/brand/       # RAS logos
 ```
 

@@ -30,13 +30,20 @@ export function summarize({ forms, workers, sites, from, today, awaitingReview }
 
   // Archived sites only appear if they still had forms in the window.
   const perSite = sites
-    .map((site) => ({ site: site.name, count: forms.filter((f) => f.jobSiteId === site.id).length, archived: !!site.archivedAt }))
+    .map((site) => ({
+      site: site.name,
+      count: forms.filter((f) => f.jobSiteId === site.id).length,
+      archived: !!site.archivedAt,
+    }))
     .filter((s) => !s.archived || s.count > 0)
     .map(({ site, count }) => ({ site, count }))
     .sort((a, b) => b.count - a.count || a.site.localeCompare(b.site))
 
   const missedItems = (Object.keys(CHECKLIST_ITEMS) as ChecklistItem[])
-    .map((item) => ({ item: CHECKLIST_ITEMS[item], count: forms.filter((f) => !f.checklist[item]).length }))
+    .map((item) => ({
+      item: CHECKLIST_ITEMS[item],
+      count: forms.filter((f) => !f.checklist[item]).length,
+    }))
     .filter((m) => m.count > 0)
     .sort((a, b) => b.count - a.count)
 

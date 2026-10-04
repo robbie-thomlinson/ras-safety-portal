@@ -50,7 +50,11 @@ export function DateRangePicker({
   }
 
   function showCalendar() {
-    setDraft(from || to ? { from: toCalendarDate(from ?? to!), to: to ? toCalendarDate(to) : undefined } : undefined)
+    setDraft(
+      from || to
+        ? { from: toCalendarDate(from ?? to!), to: to ? toCalendarDate(to) : undefined }
+        : undefined,
+    )
     setView("custom")
   }
 
@@ -67,13 +71,20 @@ export function DateRangePicker({
           id={id}
           type="button"
           variant="outline"
-          className={cn("h-9 justify-start bg-transparent font-normal", !label && "text-muted-foreground", className)}
+          className={cn(
+            "h-9 justify-start bg-transparent font-normal",
+            !label && "text-muted-foreground",
+            className,
+          )}
         >
           <CalendarIcon data-icon="inline-start" />
           <span className="truncate">{label ?? "Any time"}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className={cn("w-72 gap-0", view === "presets" ? "p-1" : "p-0")}>
+      <PopoverContent
+        align="start"
+        className={cn("w-72 gap-0", view === "presets" ? "p-1" : "p-0")}
+      >
         {view === "presets" ? (
           <div className="flex flex-col">
             <PresetButton active={!from && !to} onClick={() => choose({})}>
@@ -115,10 +126,14 @@ export function DateRangePicker({
                 {!draft?.from ? (
                   <span className="text-muted-foreground">Pick a start date</span>
                 ) : draft.to ? (
-                  <span className="font-medium">{formatCalendarRange(draft.from, draft.to, today)}</span>
+                  <span className="font-medium">
+                    {formatCalendarRange(draft.from, draft.to, today)}
+                  </span>
                 ) : (
                   <>
-                    <span className="font-medium">{formatCalendarRange(draft.from, draft.from, today)}</span>
+                    <span className="font-medium">
+                      {formatCalendarRange(draft.from, draft.from, today)}
+                    </span>
                     <span className="text-muted-foreground"> – pick an end date</span>
                   </>
                 )}
@@ -128,7 +143,10 @@ export function DateRangePicker({
                 disabled={!draft?.from}
                 onClick={() =>
                   draft?.from &&
-                  choose({ from: fromCalendarDate(draft.from), to: fromCalendarDate(draft.to ?? draft.from) })
+                  choose({
+                    from: fromCalendarDate(draft.from),
+                    to: fromCalendarDate(draft.to ?? draft.from),
+                  })
                 }
               >
                 Apply
@@ -158,8 +176,8 @@ function PresetButton({
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        "flex h-10 items-center gap-2 rounded-md md:h-9 px-2 text-left text-sm outline-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-2 focus-visible:ring-ring/50 [&_svg]:size-4 [&_svg]:shrink-0",
-        active && "font-semibold"
+        "flex h-10 items-center gap-2 rounded-md px-2 text-left text-sm outline-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-2 focus-visible:ring-ring/50 md:h-9 [&_svg]:size-4 [&_svg]:shrink-0",
+        active && "font-semibold",
       )}
     >
       <CheckIcon className={cn("text-primary", !active && "invisible")} />
@@ -177,7 +195,8 @@ function formatCalendarRange(from: Date, to: Date, today: string) {
 // URLs from elsewhere may only set one end, so those read as open-ended.
 function rangeLabel({ from, to }: DateRange, today: string) {
   const year = today.slice(0, 4)
-  if (from && to) return matchDateRangePreset(today, from, to)?.label ?? formatDateRange(from, to, year)
+  if (from && to)
+    return matchDateRangePreset(today, from, to)?.label ?? formatDateRange(from, to, year)
   if (from) return `Since ${formatDate(from, from.startsWith(year) ? "short" : "medium")}`
   if (to) return `Until ${formatDate(to, to.startsWith(year) ? "short" : "medium")}`
   return undefined

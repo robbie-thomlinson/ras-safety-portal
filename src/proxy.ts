@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
+import { env } from "@/lib/env"
+
 const PUBLIC_PATHS = ["/login"]
 
 // Keeps the Supabase session fresh and sends signed-out users to /login. This is only a
@@ -9,8 +11,8 @@ export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll() {
@@ -19,11 +21,13 @@ export async function proxy(request: NextRequest) {
         setAll(cookiesToSet, headers) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           response = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options))
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options),
+          )
           Object.entries(headers).forEach(([key, value]) => response.headers.set(key, value))
         },
       },
-    }
+    },
   )
 
   // getClaims() verifies the JWT (and refreshes it if needed); getSession() would trust the cookie.
@@ -47,7 +51,7 @@ function redirectWithCookies(
   request: NextRequest,
   response: NextResponse,
   pathname: string,
-  params: Record<string, string> = {}
+  params: Record<string, string> = {},
 ) {
   const url = request.nextUrl.clone()
   url.pathname = pathname
@@ -58,5 +62,7 @@ function redirectWithCookies(
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon.png|brand/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|icon.png|brand/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 }

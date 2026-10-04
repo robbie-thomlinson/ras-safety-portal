@@ -40,7 +40,12 @@ export default async function SitesPage() {
         <ul className="divide-y rounded-xl border bg-card">
           {sorted.map((site) => (
             <li key={site.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-              <div className={cn("flex min-w-0 flex-1 flex-col gap-0.5", site.archivedAt && "opacity-60")}>
+              <div
+                className={cn(
+                  "flex min-w-0 flex-1 flex-col gap-0.5",
+                  site.archivedAt && "opacity-60",
+                )}
+              >
                 <span className="flex items-center gap-2 font-semibold">
                   {site.name}
                   {site.archivedAt && <Badge variant="outline">Archived</Badge>}
@@ -62,7 +67,11 @@ export default async function SitesPage() {
           ))}
         </ul>
       ) : (
-        <EmptyState icon={MapPinIcon} title="No job sites" description="Add a site so framers can submit forms for it." />
+        <EmptyState
+          icon={MapPinIcon}
+          title="No job sites"
+          description="Add a site so framers can submit forms for it."
+        />
       )}
     </>
   )

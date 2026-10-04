@@ -41,15 +41,24 @@ export async function submitSafetyForm(supabase: Client, values: SafetyFormValue
 
   if (error) {
     if (SUBMIT_ERRORS[error.message]) throw new UserFacingError(SUBMIT_ERRORS[error.message])
-    if (error.code === "23505") throw new UserFacingError("Those photos are already attached to another form.")
+    if (error.code === "23505")
+      throw new UserFacingError("Those photos are already attached to another form.")
     throw error
   }
   return data
 }
 
 // The stamp_review trigger fills in who reviewed it and when.
-export async function setReviewStatus(supabase: Client, formId: number, status: "submitted" | "reviewed") {
-  const { data, error } = await supabase.from("safety_forms").update({ status }).eq("id", formId).select("id")
+export async function setReviewStatus(
+  supabase: Client,
+  formId: number,
+  status: "submitted" | "reviewed",
+) {
+  const { data, error } = await supabase
+    .from("safety_forms")
+    .update({ status })
+    .eq("id", formId)
+    .select("id")
   if (error) throw error
   if (data.length === 0) throw new UserFacingError("Safety form not found.")
 }
@@ -75,7 +84,7 @@ function selectForms(supabase: Client, filters: FormFilters, { head = false } = 
 export async function listSafetyForms(
   supabase: Client,
   filters: FormFilters = {},
-  { page = 1, pageSize = DEFAULT_PAGE_SIZE }: Partial<PageRequest> = {}
+  { page = 1, pageSize = DEFAULT_PAGE_SIZE }: Partial<PageRequest> = {},
 ) {
   // id breaks ties so no form is repeated or skipped between pages.
   const { data, count, error } = await selectForms(supabase, filters)
@@ -118,7 +127,11 @@ const DETAIL_COLUMNS = `
 
 // Returns null when the form doesn't exist or the user can't see it; the two look the same.
 export async function getSafetyForm(supabase: Client, id: number) {
-  const { data: form, error } = await supabase.from("safety_forms").select(DETAIL_COLUMNS).eq("id", id).maybeSingle()
+  const { data: form, error } = await supabase
+    .from("safety_forms")
+    .select(DETAIL_COLUMNS)
+    .eq("id", id)
+    .maybeSingle()
   if (error) throw error
   if (!form) return null
 
@@ -145,7 +158,9 @@ export async function getSafetyForm(supabase: Client, id: number) {
     review: form.reviewed_at
       ? {
           reviewedAt: form.reviewed_at,
-          reviewerName: form.reviewer ? `${form.reviewer.first_name} ${form.reviewer.last_name}`.trim() : null,
+          reviewerName: form.reviewer
+            ? `${form.reviewer.first_name} ${form.reviewer.last_name}`.trim()
+            : null,
         }
       : null,
     photos: form.photos.map((photo) => ({

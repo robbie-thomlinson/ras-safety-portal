@@ -24,7 +24,13 @@ export const CHECKLIST_SECTIONS: { title: string; items: ChecklistItem[] }[] = [
   { title: "PPE worn", items: ["hardHatWorn", "vestWorn", "bootsWorn", "eyeProtectionWorn"] },
   {
     title: "Equipment",
-    items: ["fallProtectionInspected", "scaffoldingInspected", "laddersInspected", "toolsInspected", "cordsInspected"],
+    items: [
+      "fallProtectionInspected",
+      "scaffoldingInspected",
+      "laddersInspected",
+      "toolsInspected",
+      "cordsInspected",
+    ],
   },
   { title: "Site", items: ["hazardsIdentified"] },
 ]
@@ -77,6 +83,9 @@ export const formFiltersSchema = z
     to: isoDate.optional(),
     status: formStatusSchema.optional(),
   })
-  .refine((f) => !f.from || !f.to || f.from <= f.to, { message: "Start date must be before end date", path: ["to"] })
+  .refine((f) => !f.from || !f.to || f.from <= f.to, {
+    message: "Start date must be before end date",
+    path: ["to"],
+  })
 
 export type FormFilters = z.output<typeof formFiltersSchema>

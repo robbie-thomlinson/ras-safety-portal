@@ -4,10 +4,23 @@ import { CHECKLIST_ITEMS, type ChecklistItem } from "@/features/safety-forms/sch
 
 import { summarize, type SummaryForm } from "./summary"
 
-const allYes = Object.fromEntries(Object.keys(CHECKLIST_ITEMS).map((k) => [k, true])) as Record<ChecklistItem, boolean>
+const allYes = Object.fromEntries(Object.keys(CHECKLIST_ITEMS).map((k) => [k, true])) as Record<
+  ChecklistItem,
+  boolean
+>
 
-function form(date: string, workerId: string, jobSiteId: number, no: ChecklistItem[] = []): SummaryForm {
-  return { date, workerId, jobSiteId, checklist: { ...allYes, ...Object.fromEntries(no.map((k) => [k, false])) } }
+function form(
+  date: string,
+  workerId: string,
+  jobSiteId: number,
+  no: ChecklistItem[] = [],
+): SummaryForm {
+  return {
+    date,
+    workerId,
+    jobSiteId,
+    checklist: { ...allYes, ...Object.fromEntries(no.map((k) => [k, false])) },
+  }
 }
 
 const workers = [
@@ -37,7 +50,12 @@ const summary = summarize({
 
 describe("summarize", () => {
   it("counts today's forms and lists who hasn't submitted", () => {
-    expect(summary.totals).toEqual({ submittedToday: 2, awaitingReview: 2, formsWithIssues: 2, workers: 3 })
+    expect(summary.totals).toEqual({
+      submittedToday: 2,
+      awaitingReview: 2,
+      formsWithIssues: 2,
+      workers: 3,
+    })
     expect(summary.notSubmittedToday.map((w) => w.name)).toEqual(["Priya Sandhu", "Tom Bergstrom"])
   })
 

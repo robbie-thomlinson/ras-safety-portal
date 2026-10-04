@@ -29,7 +29,10 @@ export function Pagination({
   return (
     <nav
       aria-label="Pagination"
-      className={cn("flex flex-col-reverse items-center gap-3 sm:flex-row sm:justify-between", className)}
+      className={cn(
+        "flex flex-col-reverse items-center gap-3 sm:flex-row sm:justify-between",
+        className,
+      )}
     >
       <p className="text-sm text-muted-foreground">
         Showing <span className="font-semibold text-foreground">{count.format(first)}</span>–
@@ -47,12 +50,24 @@ export function Pagination({
           {pageWindow(page, pageCount).map((p, i) => (
             <li key={p === "gap" ? `gap-${i}` : p}>
               {p === "gap" ? (
-                <span className="flex size-9 items-center justify-center text-muted-foreground" aria-hidden>
+                <span
+                  className="flex size-9 items-center justify-center text-muted-foreground"
+                  aria-hidden
+                >
                   …
                 </span>
               ) : (
-                <Button asChild variant={p === page ? "outline" : "ghost"} size="icon-lg" className="w-auto min-w-9 px-2">
-                  <Link href={href(p)} aria-current={p === page ? "page" : undefined} aria-label={`Page ${p}`}>
+                <Button
+                  asChild
+                  variant={p === page ? "outline" : "ghost"}
+                  size="icon-lg"
+                  className="w-auto min-w-9 px-2"
+                >
+                  <Link
+                    href={href(p)}
+                    aria-current={p === page ? "page" : undefined}
+                    aria-label={`Page ${p}`}
+                  >
                     {count.format(p)}
                   </Link>
                 </Button>
@@ -61,7 +76,12 @@ export function Pagination({
           ))}
         </ul>
 
-        <StepLink href={page < pageCount ? href(page + 1) : null} label="Next" icon={ChevronRightIcon} iconEnd />
+        <StepLink
+          href={page < pageCount ? href(page + 1) : null}
+          label="Next"
+          icon={ChevronRightIcon}
+          iconEnd
+        />
       </div>
     </nav>
   )

@@ -29,7 +29,7 @@ export function YesNo({
       aria-invalid={invalid}
       className={cn(
         "inline-flex shrink-0 gap-1 rounded-lg border bg-background p-0.5",
-        invalid && "border-destructive ring-3 ring-destructive/20"
+        invalid && "border-destructive ring-3 ring-destructive/20",
       )}
       {...props}
     >

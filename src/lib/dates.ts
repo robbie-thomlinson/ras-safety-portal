@@ -27,8 +27,8 @@ export function dateRange(from: string, to: string) {
 
 // The calendar component works in local Date objects; the app passes YYYY-MM-DD strings around.
 export function toCalendarDate(date: string) {
-  const [y, m, d] = date.split("-").map(Number)
-  return new Date(y, m - 1, d)
+  // A date-time without an offset parses as local time.
+  return new Date(`${date}T00:00:00`)
 }
 
 export function fromCalendarDate(date: Date) {
@@ -66,8 +66,19 @@ export function matchDateRangePreset(today: string, from?: string, to?: string) 
 }
 
 const dateFormats = {
-  long: new Intl.DateTimeFormat("en-CA", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }),
-  medium: new Intl.DateTimeFormat("en-CA", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }),
+  long: new Intl.DateTimeFormat("en-CA", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }),
+  medium: new Intl.DateTimeFormat("en-CA", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }),
   short: new Intl.DateTimeFormat("en-CA", { month: "short", day: "numeric", timeZone: "UTC" }),
 }
 
@@ -79,7 +90,9 @@ export function formatDate(date: string, style: keyof typeof dateFormats = "long
 // "Sep 28 – Oct 3". The year is only shown when the range isn't within `currentYear`.
 export function formatDateRange(from: string, to: string, currentYear: string) {
   const style = from.startsWith(currentYear) && to.startsWith(currentYear) ? "short" : "medium"
-  return from === to ? formatDate(from, style) : `${formatDate(from, style)} – ${formatDate(to, style)}`
+  return from === to
+    ? formatDate(from, style)
+    : `${formatDate(from, style)} – ${formatDate(to, style)}`
 }
 
 const dateTimeFormat = new Intl.DateTimeFormat("en-CA", {

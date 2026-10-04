@@ -27,7 +27,12 @@ describe("calendar dates", () => {
   })
 
   it("lists every date in a range", () => {
-    expect(dateRange("2026-09-29", "2026-10-02")).toEqual(["2026-09-29", "2026-09-30", "2026-10-01", "2026-10-02"])
+    expect(dateRange("2026-09-29", "2026-10-02")).toEqual([
+      "2026-09-29",
+      "2026-09-30",
+      "2026-10-01",
+      "2026-10-02",
+    ])
   })
 
   it("formats without shifting the day", () => {

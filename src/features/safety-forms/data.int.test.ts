@@ -3,7 +3,13 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import type { Client } from "@/lib/supabase/types"
 import { cleanUp, serviceClient, signIn, uploadPhoto, USERS } from "@/test/supabase"
 
-import { getSafetyForm, listSafetyForms, listWorkers, setReviewStatus, submitSafetyForm } from "./data"
+import {
+  getSafetyForm,
+  listSafetyForms,
+  listWorkers,
+  setReviewStatus,
+  submitSafetyForm,
+} from "./data"
 import { PHOTO_BUCKET, photoPath } from "./photos"
 import type { FormFilters, SafetyFormValues } from "./schemas"
 
@@ -34,8 +40,17 @@ async function upload(client: Client, userId: string) {
   return path
 }
 
-async function submit(client: Client, values: Partial<SafetyFormValues> & Pick<SafetyFormValues, "photoPaths">) {
-  const id = await submitSafetyForm(client, { jobSiteId: 1, date: "2026-09-15", notes: "Test", ...checklist, ...values })
+async function submit(
+  client: Client,
+  values: Partial<SafetyFormValues> & Pick<SafetyFormValues, "photoPaths">,
+) {
+  const id = await submitSafetyForm(client, {
+    jobSiteId: 1,
+    date: "2026-09-15",
+    notes: "Test",
+    ...checklist,
+    ...values,
+  })
   formIds.push(id)
   return id
 }
@@ -44,7 +59,11 @@ let framerFormId: number
 let otherFormId: number
 
 beforeAll(async () => {
-  ;[framer, otherFramer, admin] = await Promise.all([signIn("framer"), signIn("otherFramer"), signIn("admin")])
+  ;[framer, otherFramer, admin] = await Promise.all([
+    signIn("framer"),
+    signIn("otherFramer"),
+    signIn("admin"),
+  ])
 
   framerFormId = await submit(framer, {
     jobSiteId: 2,
@@ -74,20 +93,28 @@ describe("submitting", () => {
     })
     expect(form?.photos).toHaveLength(2)
 
-    const response = await fetch(form!.photos[0].url!)
+    const response = await fetch(form!.photos[0]!.url!)
     expect(response.status).toBe(200)
     expect(response.headers.get("content-type")).toBe("image/png")
   })
 
   it("rejects another framer's photo", async () => {
     const theirs = await upload(otherFramer, USERS.otherFramer.id)
-    await expect(submit(framer, { photoPaths: [theirs] })).rejects.toThrow("Some photos didn't finish uploading")
+    await expect(submit(framer, { photoPaths: [theirs] })).rejects.toThrow(
+      "Some photos didn't finish uploading",
+    )
   })
 
   it("rejects a photo that's already on another form", async () => {
-    const [attached] = (await serviceClient().from("safety_form_photos").select("path").eq("safety_form_id", framerFormId))
-      .data!
-    await expect(submit(framer, { photoPaths: [attached.path] })).rejects.toThrow("already attached to another form")
+    const [attached] = (
+      await serviceClient()
+        .from("safety_form_photos")
+        .select("path")
+        .eq("safety_form_id", framerFormId)
+    ).data!
+    await expect(submit(framer, { photoPaths: [attached!.path] })).rejects.toThrow(
+      "already attached to another form",
+    )
   })
 
   it("rejects an archived job site", async () => {
@@ -99,7 +126,9 @@ describe("submitting", () => {
       .single()
     try {
       const photo = await upload(framer, USERS.framer.id)
-      await expect(submit(framer, { jobSiteId: site!.id, photoPaths: [photo] })).rejects.toThrow("job site isn't available")
+      await expect(submit(framer, { jobSiteId: site!.id, photoPaths: [photo] })).rejects.toThrow(
+        "job site isn't available",
+      )
     } finally {
       await service.from("job_sites").delete().eq("id", site!.id)
     }
@@ -118,7 +147,11 @@ describe("photo storage", () => {
   })
 
   it("rejects files that aren't images", async () => {
-    const { error } = await uploadPhoto(framer, `${USERS.framer.id}/${crypto.randomUUID()}.png`, "text/html")
+    const { error } = await uploadPhoto(
+      framer,
+      `${USERS.framer.id}/${crypto.randomUUID()}.png`,
+      "text/html",
+    )
     expect(error).not.toBeNull()
   })
 
@@ -129,13 +162,17 @@ describe("photo storage", () => {
   })
 
   it("doesn't let a framer delete a submitted photo", async () => {
-    const [attached] = (await serviceClient().from("safety_form_photos").select("path").eq("safety_form_id", framerFormId))
-      .data!
-    const { data } = await framer.storage.from(PHOTO_BUCKET).remove([attached.path])
+    const [attached] = (
+      await serviceClient()
+        .from("safety_form_photos")
+        .select("path")
+        .eq("safety_form_id", framerFormId)
+    ).data!
+    const { data } = await framer.storage.from(PHOTO_BUCKET).remove([attached!.path])
     expect(data ?? []).toHaveLength(0)
 
     const form = await getSafetyForm(admin, framerFormId)
-    expect((await fetch(form!.photos[0].url!)).status).toBe(200)
+    expect((await fetch(form!.photos[0]!.url!)).status).toBe(200)
   })
 })
 
@@ -188,7 +225,12 @@ describe("paging", () => {
     const all = await everything(admin)
     const page = await listSafetyForms(admin, {}, { page: 2, pageSize: 2 })
     expect(page.items.map((f) => f.id)).toEqual(all.slice(2, 4).map((f) => f.id))
-    expect(page).toMatchObject({ page: 2, pageSize: 2, total: all.length, pageCount: Math.ceil(all.length / 2) })
+    expect(page).toMatchObject({
+      page: 2,
+      pageSize: 2,
+      total: all.length,
+      pageCount: Math.ceil(all.length / 2),
+    })
   })
 
   it("counts only the filtered forms", async () => {
@@ -219,6 +261,8 @@ describe("reviewing", () => {
   })
 
   it("doesn't let a framer review a form", async () => {
-    await expect(setReviewStatus(framer, framerFormId, "reviewed")).rejects.toThrow("Safety form not found.")
+    await expect(setReviewStatus(framer, framerFormId, "reviewed")).rejects.toThrow(
+      "Safety form not found.",
+    )
   })
 })

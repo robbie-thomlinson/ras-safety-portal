@@ -168,14 +168,21 @@ export function SafetyForm({
       <Card>
         <CardHeader>
           <CardTitle className="text-xl">Notes</CardTitle>
-          <CardDescription>Optional. Anything the reviewer should know, like hazards or fixes made.</CardDescription>
+          <CardDescription>
+            Optional. Anything the reviewer should know, like hazards or fixes made.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Field data-invalid={!!errors.notes}>
             <FieldLabel htmlFor="notes" className="sr-only">
               Notes
             </FieldLabel>
-            <Textarea id="notes" rows={4} aria-invalid={!!errors.notes} {...form.register("notes")} />
+            <Textarea
+              id="notes"
+              rows={4}
+              aria-invalid={!!errors.notes}
+              {...form.register("notes")}
+            />
             <FieldDescription className="text-right text-xs">
               {notesLength} / {NOTES_MAX}
             </FieldDescription>
@@ -205,7 +212,12 @@ export function SafetyForm({
 
       <div className="flex flex-col gap-3">
         {formError && <FieldError>{formError}</FieldError>}
-        <Button type="submit" size="lg" className="h-11 sm:self-end sm:px-8" disabled={busy || uploads.uploading}>
+        <Button
+          type="submit"
+          size="lg"
+          className="h-11 sm:self-end sm:px-8"
+          disabled={busy || uploads.uploading}
+        >
           {uploads.uploading ? "Uploading photos…" : busy ? "Submitting…" : "Submit safety form"}
         </Button>
       </div>

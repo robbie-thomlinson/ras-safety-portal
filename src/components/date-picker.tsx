@@ -30,7 +30,10 @@ export function DatePicker({
   "aria-label"?: string
 }) {
   const [open, setOpen] = useState(false)
-  const disabled = [...(min ? [{ before: toCalendarDate(min) }] : []), ...(max ? [{ after: toCalendarDate(max) }] : [])]
+  const disabled = [
+    ...(min ? [{ before: toCalendarDate(min) }] : []),
+    ...(max ? [{ after: toCalendarDate(max) }] : []),
+  ]
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -39,7 +42,11 @@ export function DatePicker({
           id={id}
           type="button"
           variant="outline"
-          className={cn("h-10 justify-start font-normal", !value && "text-muted-foreground", className)}
+          className={cn(
+            "h-10 justify-start font-normal",
+            !value && "text-muted-foreground",
+            className,
+          )}
           {...props}
         >
           <CalendarIcon data-icon="inline-start" />

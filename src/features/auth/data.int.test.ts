@@ -25,7 +25,10 @@ describe("getUserFromClient", () => {
   })
 
   it("rejects a wrong password", async () => {
-    const { error } = await anonClient().auth.signInWithPassword({ email: USERS.framer.email, password: "wrong" })
+    const { error } = await anonClient().auth.signInWithPassword({
+      email: USERS.framer.email,
+      password: "wrong",
+    })
     expect(error).not.toBeNull()
   })
 })

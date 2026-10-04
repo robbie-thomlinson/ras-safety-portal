@@ -1,4 +1,10 @@
-import { CheckCircle2Icon, ClipboardListIcon, ClockIcon, TriangleAlertIcon, UsersIcon } from "lucide-react"
+import {
+  CheckCircle2Icon,
+  ClipboardListIcon,
+  ClockIcon,
+  TriangleAlertIcon,
+  UsersIcon,
+} from "lucide-react"
 import Link from "next/link"
 
 import { PageHeader } from "@/components/page-header"
@@ -40,7 +46,11 @@ export function AdminDashboard({ summary }: { summary: DashboardSummary }) {
           value={totals.awaitingReview}
           href={totals.awaitingReview > 0 ? "/submissions?status=submitted" : undefined}
         />
-        <StatCard icon={TriangleAlertIcon} label={`Forms with a No (${SUMMARY_DAYS} days)`} value={totals.formsWithIssues} />
+        <StatCard
+          icon={TriangleAlertIcon}
+          label={`Forms with a No (${SUMMARY_DAYS} days)`}
+          value={totals.formsWithIssues}
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

@@ -9,7 +9,13 @@ const SCROLL_THRESHOLD = 8
 
 // On phones the header slides away while scrolling down and comes back on any scroll up, like a
 // mobile browser's address bar. It's still sticky, so nothing below it shifts. Desktop always shows it.
-export function AutoHideHeader({ className, children }: { className?: string; children: React.ReactNode }) {
+export function AutoHideHeader({
+  className,
+  children,
+}: {
+  className?: string
+  children: React.ReactNode
+}) {
   const ref = useRef<HTMLElement>(null)
   const [hidden, setHidden] = useState(false)
 
@@ -39,7 +45,7 @@ export function AutoHideHeader({ className, children }: { className?: string; ch
       onFocus={() => setHidden(false)}
       className={cn(
         "sticky top-0 z-40 motion-safe:transition-transform motion-safe:duration-200 max-md:data-hidden:-translate-y-full",
-        className
+        className,
       )}
     >
       {children}

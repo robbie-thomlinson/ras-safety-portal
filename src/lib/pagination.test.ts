@@ -9,7 +9,8 @@ describe("parsePage", () => {
   })
 
   it("falls back to the first page for anything else", () => {
-    for (const value of [undefined, "", "0", "-2", "1.5", "abc", "2abc"]) expect(parsePage(value)).toBe(1)
+    for (const value of [undefined, "", "0", "-2", "1.5", "abc", "2abc"])
+      expect(parsePage(value)).toBe(1)
   })
 })
 
@@ -47,11 +48,15 @@ describe("pageWindow", () => {
 
 describe("pageHref", () => {
   it("keeps the filters and swaps the page", () => {
-    expect(pageHref("/submissions", { status: "submitted", page: "2" }, 3)).toBe("/submissions?status=submitted&page=3")
+    expect(pageHref("/submissions", { status: "submitted", page: "2" }, 3)).toBe(
+      "/submissions?status=submitted&page=3",
+    )
   })
 
   it("leaves page 1 off the URL", () => {
     expect(pageHref("/submissions", { page: "4" }, 1)).toBe("/submissions")
-    expect(pageHref("/submissions", { jobSiteId: "2", page: "4" }, 1)).toBe("/submissions?jobSiteId=2")
+    expect(pageHref("/submissions", { jobSiteId: "2", page: "4" }, 1)).toBe(
+      "/submissions?jobSiteId=2",
+    )
   })
 })

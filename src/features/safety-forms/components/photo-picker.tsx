@@ -21,7 +21,8 @@ export function PhotoPicker({
   invalid?: boolean
 }) {
   const full = photos.length >= MAX_PHOTOS
-  const tile = "relative flex aspect-square items-center justify-center overflow-hidden rounded-lg border bg-muted"
+  const tile =
+    "relative flex aspect-square items-center justify-center overflow-hidden rounded-lg border bg-muted"
 
   return (
     <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4">
@@ -63,7 +64,7 @@ export function PhotoPicker({
             className={cn(
               tile,
               "cursor-pointer flex-col gap-1 border-2 border-dashed bg-background text-sm font-semibold text-primary hover:bg-secondary has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50",
-              invalid && "border-destructive"
+              invalid && "border-destructive",
             )}
           >
             <CameraIcon className="size-6" aria-hidden />

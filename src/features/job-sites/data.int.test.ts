@@ -30,18 +30,24 @@ describe("job sites", () => {
 
     await setJobSiteArchived(admin, id, true)
     expect((await listJobSites(framer)).some((s) => s.id === id)).toBe(false)
-    expect((await listJobSites(framer, { includeArchived: true })).find((s) => s.id === id)?.archivedAt).not.toBeNull()
+    expect(
+      (await listJobSites(framer, { includeArchived: true })).find((s) => s.id === id)?.archivedAt,
+    ).not.toBeNull()
 
     await setJobSiteArchived(admin, id, false)
     expect((await listJobSites(framer)).some((s) => s.id === id)).toBe(true)
   })
 
   it("doesn't let a framer add a site", async () => {
-    await expect(createJobSite(framer, { name: "Sneaky", address: "1 Road" })).rejects.toMatchObject({ code: "42501" })
+    await expect(
+      createJobSite(framer, { name: "Sneaky", address: "1 Road" }),
+    ).rejects.toMatchObject({ code: "42501" })
   })
 
   it("doesn't let a framer edit or archive a site", async () => {
-    await expect(updateJobSite(framer, 1, { name: "Renamed", address: "x" })).rejects.toThrow("Job site not found.")
+    await expect(updateJobSite(framer, 1, { name: "Renamed", address: "x" })).rejects.toThrow(
+      "Job site not found.",
+    )
     await expect(setJobSiteArchived(framer, 1, true)).rejects.toThrow("Job site not found.")
   })
 })

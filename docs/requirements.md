@@ -21,6 +21,7 @@
 #### Framer Dashboard
 
 ##### Safety form
+
 - [x] Select job site
 - [x] Select date
 - [x] Safety checklist: PPE worn (hard hat, vest, boots, eye protection), fall protection in place, ladders/scaffolding inspected, tools and cords in good condition, hazards identified
@@ -29,6 +30,7 @@
 - [x] Validations for each with clear messages
 
 #### Admin dashboard
+
 - [x] Lists submissions (worker, site, date and status)
 - [x] Filter submissions (by site, worker, date range)
 - [x] Detailed submission view for each submission (pictures, form data)
@@ -36,11 +38,11 @@
 
 ### Non functional requirements
 
-- Mobile friendly 
+- Mobile friendly
 - Uses RAS branding (logo, colors, etc - generally adheres to style guidelines implied by their website)
 - Code quality
 - Understanding of code
-- 
+-
 
 ### Deliverables
 

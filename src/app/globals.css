@@ -160,14 +160,18 @@
   body {
     @apply bg-background text-foreground;
   }
-  button:not(:disabled), [role="button"]:not(:disabled) {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
     cursor: pointer;
   }
   html {
     @apply font-body;
   }
   /* Headings follow the RAS site: condensed, uppercase, tight leading */
-  h1, h2, h3, h4 {
-    @apply font-heading font-semibold uppercase leading-[1.15] tracking-[0.01em];
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading leading-[1.15] font-semibold tracking-[0.01em] uppercase;
   }
 }

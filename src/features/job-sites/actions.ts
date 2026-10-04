@@ -13,12 +13,18 @@ const idSchema = z.coerce.number().int().positive()
 
 type JobSiteInput = z.input<typeof jobSiteSchema>
 
-export async function createJobSiteAction(input: JobSiteInput): Promise<ActionResult<{ id: number }>> {
+export async function createJobSiteAction(
+  input: JobSiteInput,
+): Promise<ActionResult<{ id: number }>> {
   try {
     const { supabase } = await requireActionUser("admin")
     const parsed = jobSiteSchema.safeParse(input)
     if (!parsed.success) {
-      return { ok: false, error: "Check the highlighted fields.", fieldErrors: z.flattenError(parsed.error).fieldErrors }
+      return {
+        ok: false,
+        error: "Check the highlighted fields.",
+        fieldErrors: z.flattenError(parsed.error).fieldErrors,
+      }
     }
     const id = await createJobSite(supabase, parsed.data)
     refresh()
@@ -33,7 +39,11 @@ export async function updateJobSiteAction(id: number, input: JobSiteInput): Prom
     const { supabase } = await requireActionUser("admin")
     const parsed = jobSiteSchema.safeParse(input)
     if (!parsed.success) {
-      return { ok: false, error: "Check the highlighted fields.", fieldErrors: z.flattenError(parsed.error).fieldErrors }
+      return {
+        ok: false,
+        error: "Check the highlighted fields.",
+        fieldErrors: z.flattenError(parsed.error).fieldErrors,
+      }
     }
     await updateJobSite(supabase, idSchema.parse(id), parsed.data)
     refresh()
@@ -43,7 +53,10 @@ export async function updateJobSiteAction(id: number, input: JobSiteInput): Prom
   }
 }
 
-export async function setJobSiteArchivedAction(id: number, archived: boolean): Promise<ActionResult> {
+export async function setJobSiteArchivedAction(
+  id: number,
+  archived: boolean,
+): Promise<ActionResult> {
   try {
     const { supabase } = await requireActionUser("admin")
     await setJobSiteArchived(supabase, idSchema.parse(id), z.boolean().parse(archived))

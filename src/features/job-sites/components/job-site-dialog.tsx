@@ -36,7 +36,9 @@ export function JobSiteDialog({ site, trigger }: { site?: JobSite; trigger: Reac
   const { errors, isSubmitting } = form.formState
 
   async function onSubmit(values: JobSiteValues) {
-    const result = site ? await updateJobSiteAction(site.id, values) : await createJobSiteAction(values)
+    const result = site
+      ? await updateJobSiteAction(site.id, values)
+      : await createJobSiteAction(values)
     if (!result.ok) {
       for (const [field, messages] of Object.entries(result.fieldErrors ?? {})) {
         form.setError(field as keyof Input, { message: messages[0] })
@@ -61,7 +63,9 @@ export function JobSiteDialog({ site, trigger }: { site?: JobSite; trigger: Reac
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
           <DialogHeader>
             <DialogTitle>{site ? "Edit job site" : "Add job site"}</DialogTitle>
-            <DialogDescription>Framers choose from active job sites when they fill in a form.</DialogDescription>
+            <DialogDescription>
+              Framers choose from active job sites when they fill in a form.
+            </DialogDescription>
           </DialogHeader>
           <FieldGroup>
             <Field data-invalid={!!errors.name}>
@@ -71,7 +75,11 @@ export function JobSiteDialog({ site, trigger }: { site?: JobSite; trigger: Reac
             </Field>
             <Field data-invalid={!!errors.address}>
               <FieldLabel htmlFor="site-address">Address</FieldLabel>
-              <Input id="site-address" aria-invalid={!!errors.address} {...form.register("address")} />
+              <Input
+                id="site-address"
+                aria-invalid={!!errors.address}
+                {...form.register("address")}
+              />
               <FieldError errors={[errors.address]} />
             </Field>
           </FieldGroup>

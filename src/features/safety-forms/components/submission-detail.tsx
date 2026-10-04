@@ -7,7 +7,13 @@ import { cn } from "@/lib/utils"
 import type { SafetyFormDetail } from "../data"
 import { CHECKLIST_ITEMS, CHECKLIST_SECTIONS } from "../schemas"
 
-export function SubmissionDetail({ form, showWorker }: { form: SafetyFormDetail; showWorker: boolean }) {
+export function SubmissionDetail({
+  form,
+  showWorker,
+}: {
+  form: SafetyFormDetail
+  showWorker: boolean
+}) {
   const noCount = Object.values(form.checklist).filter((answer) => !answer).length
 
   return (
@@ -31,15 +37,24 @@ export function SubmissionDetail({ form, showWorker }: { form: SafetyFormDetail;
                   {section.items.map((item) => {
                     const yes = form.checklist[item]
                     return (
-                      <li key={item} className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm">
+                      <li
+                        key={item}
+                        className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm"
+                      >
                         <span>{CHECKLIST_ITEMS[item]}</span>
                         <span
                           className={cn(
                             "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold",
-                            yes ? "bg-success/15 text-brand-green-800" : "bg-destructive/10 text-destructive"
+                            yes
+                              ? "bg-success/15 text-brand-green-800"
+                              : "bg-destructive/10 text-destructive",
                           )}
                         >
-                          {yes ? <CheckIcon className="size-3.5" aria-hidden /> : <XIcon className="size-3.5" aria-hidden />}
+                          {yes ? (
+                            <CheckIcon className="size-3.5" aria-hidden />
+                          ) : (
+                            <XIcon className="size-3.5" aria-hidden />
+                          )}
                           {yes ? "Yes" : "No"}
                         </span>
                       </li>
@@ -72,7 +87,11 @@ export function SubmissionDetail({ form, showWorker }: { form: SafetyFormDetail;
             <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {form.photos.map((photo, i) => (
                 <li key={photo.id}>
-                  <PhotoTile url={photo.url} contentType={photo.contentType} label={`Photo ${i + 1}`} />
+                  <PhotoTile
+                    url={photo.url}
+                    contentType={photo.contentType}
+                    label={`Photo ${i + 1}`}
+                  />
                 </li>
               ))}
             </ul>
@@ -118,8 +137,17 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 
 // Signed Storage URLs, so a plain <img> rather than next/image. Most browsers can't show HEIC,
 // so those get a link to open the file instead.
-function PhotoTile({ url, contentType, label }: { url: string | null; contentType: string; label: string }) {
-  const tile = "flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg border bg-muted"
+function PhotoTile({
+  url,
+  contentType,
+  label,
+}: {
+  url: string | null
+  contentType: string
+  label: string
+}) {
+  const tile =
+    "flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg border bg-muted"
   if (!url) {
     return (
       <div className={cn(tile, "text-xs text-muted-foreground")}>
@@ -128,7 +156,12 @@ function PhotoTile({ url, contentType, label }: { url: string | null; contentTyp
     )
   }
   return (
-    <a href={url} target="_blank" rel="noreferrer" className={cn(tile, "transition-opacity hover:opacity-90")}>
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      className={cn(tile, "transition-opacity hover:opacity-90")}
+    >
       {contentType === "image/heic" ? (
         <span className="flex flex-col items-center gap-1 text-xs text-muted-foreground">
           <ImageIcon className="size-6" aria-hidden />

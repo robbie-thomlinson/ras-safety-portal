@@ -11,10 +11,18 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-8 bg-brand-paper px-4 py-10">
-      <Image src="/brand/ras-logo.png" alt="Ron Anderson & Sons Ltd." width={144} height={120} priority />
+      <Image
+        src="/brand/ras-logo.png"
+        alt="Ron Anderson & Sons Ltd."
+        width={144}
+        height={120}
+        priority
+      />
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="font-heading text-2xl text-primary uppercase">Site Safety</CardTitle>
+          <CardTitle className="font-heading text-2xl text-primary uppercase">
+            Site Safety
+          </CardTitle>
           <CardDescription>Sign in to submit or review daily safety checklists.</CardDescription>
         </CardHeader>
         <CardContent>

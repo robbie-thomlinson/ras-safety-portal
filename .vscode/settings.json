@@ -1,0 +1,10 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": { "source.fixAll.eslint": "explicit" },
+  // The workspace TypeScript enables the Next.js plugin (route and 'use client' checks).
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  // Understands Tailwind v4 at-rules like @theme and @custom-variant.
+  "files.associations": { "*.css": "tailwindcss" }
+}

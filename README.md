@@ -2,6 +2,8 @@
 
 Daily job site safety checklists for Ron Anderson & Sons Ltd. Framers submit safety forms and admins review them.
 
+Live demo: https://ras-safety-portal.vercel.app. It has the same accounts as the local seed (listed under [Setup](#setup)), but a different password, which is in the submission email.
+
 See [`docs/requirements.md`](docs/requirements.md) and the [ERD](docs/erd.png).
 
 ## Tech stack
@@ -47,6 +49,9 @@ Also available as VS Code tasks (`Terminal → Run Task`).
 ## Assumptions
 
 - Admins cannot fill in new safety forms, they are only responsible for reviewing them
+- A form's status is `submitted` until an admin marks it `reviewed` (which records who and when). Admins can undo a review
+- Every form needs at least one photo (up to 10, each a JPEG, PNG, WebP or HEIC of 10 MB or less)
+- RAS works in BC, so "today" means Vancouver time. Forms can't be dated in the future
 - There is no self sign-up - accounts are created in Supabase (dashboard or admin API)
 - A user's role comes from `role` in their `app_metadata` (`framer` if unset), which only the admin API or SQL can change. Changing it updates their profile
 - Submissions grow into the tens of thousands, so lists are paged 25 at a time with numbered pages (`?page=`, kept alongside the filters). Offset paging with an exact count stays fast at that size; job sites and workers stay small enough to load whole

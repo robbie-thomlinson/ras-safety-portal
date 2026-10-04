@@ -13,9 +13,19 @@ const WORKERS: SearchSelectOption[] = [
 function renderSelect(value?: string) {
   const onChange = vi.fn()
   render(
-    <SearchSelect value={value} options={WORKERS} placeholder="All workers" onChange={onChange} />,
+    <SearchSelect
+      value={value}
+      options={WORKERS}
+      label="Worker"
+      placeholder="All workers"
+      onChange={onChange}
+    />,
   )
-  return { onChange, user: userEvent.setup(), input: screen.getByRole("combobox") }
+  return {
+    onChange,
+    user: userEvent.setup(),
+    input: screen.getByRole("combobox", { name: "Worker" }),
+  }
 }
 
 describe("SearchSelect", () => {
@@ -24,6 +34,7 @@ describe("SearchSelect", () => {
       <SearchSelect
         value={undefined}
         options={WORKERS}
+        label="Worker"
         placeholder="All workers"
         onChange={vi.fn()}
       />,
@@ -33,7 +44,13 @@ describe("SearchSelect", () => {
     unmount()
 
     render(
-      <SearchSelect value="b2" options={WORKERS} placeholder="All workers" onChange={vi.fn()} />,
+      <SearchSelect
+        value="b2"
+        options={WORKERS}
+        label="Worker"
+        placeholder="All workers"
+        onChange={vi.fn()}
+      />,
     )
     expect(screen.getByRole("combobox")).toHaveValue("Ben Smith")
   })

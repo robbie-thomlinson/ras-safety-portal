@@ -10,6 +10,27 @@
       "group": { "kind": "build", "isDefault": true }
     },
     {
+      "label": "Test: unit and component",
+      "type": "shell",
+      "command": "npx vitest run --project unit --project components",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Test: integration",
+      "type": "shell",
+      "command": "npx vitest run --project integration",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Test: e2e",
+      "type": "shell",
+      "command": "npm run test:e2e",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
       "label": "Docs: regenerate diagrams",
       "type": "shell",
       "command": "node scripts/diagrams.mjs",

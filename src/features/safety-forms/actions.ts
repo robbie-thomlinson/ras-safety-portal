@@ -12,7 +12,7 @@ import { reviewSchema, safetyFormSchema, type SafetyFormInput } from "./schemas"
 // Photos must already be uploaded to Storage; this records the form and attaches them atomically.
 export async function submitSafetyFormAction(input: SafetyFormInput): Promise<ActionResult<{ id: number }>> {
   try {
-    const { user, supabase } = await requireActionUser("farmer")
+    const { user, supabase } = await requireActionUser("framer")
 
     const parsed = safetyFormSchema.safeParse(input)
     if (!parsed.success) {

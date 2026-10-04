@@ -62,8 +62,8 @@ grant update (status) on public.safety_forms to authenticated;
 
 -- Photos are uploaded first, to {worker_id}/{uuid}.{ext} in the safety-photos bucket, then
 -- submitted here with the form. Direct inserts are revoked so a form can't exist without photos.
-drop policy "Farmers submit forms for themselves" on public.safety_forms;
-drop policy "Farmers attach photos to their own forms" on public.safety_form_photos;
+drop policy "Framers submit forms for themselves" on public.safety_forms;
+drop policy "Framers attach photos to their own forms" on public.safety_form_photos;
 revoke insert on public.safety_forms from authenticated;
 revoke insert on public.safety_form_photos from authenticated;
 
@@ -99,8 +99,8 @@ begin
     raise exception 'not_authenticated' using errcode = '42501';
   end if;
 
-  if not exists (select 1 from public.profiles where id = v_uid and role = 'farmer') then
-    raise exception 'farmers_only' using errcode = '42501';
+  if not exists (select 1 from public.profiles where id = v_uid and role = 'framer') then
+    raise exception 'framers_only' using errcode = '42501';
   end if;
 
   if not exists (select 1 from public.job_sites where id = p_job_site_id and archived_at is null) then
@@ -165,9 +165,9 @@ grant execute on function public.submit_safety_form to authenticated;
 
 -- ---------- Storage ----------
 
--- Lets a farmer remove a photo they took out of the form before submitting. Once a photo is
+-- Lets a framer remove a photo they took out of the form before submitting. Once a photo is
 -- attached to a form it's part of the record and stays.
-create policy "Farmers delete their own unattached photos"
+create policy "Framers delete their own unattached photos"
   on storage.objects for delete to authenticated
   using (
     bucket_id = 'safety-photos'

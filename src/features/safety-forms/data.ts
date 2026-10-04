@@ -11,10 +11,10 @@ import type { ChecklistItem, FormFilters, SafetyFormValues } from "./schemas"
 // Signed photo URLs last long enough to view a submission, not to share one around.
 const PHOTO_URL_TTL_SECONDS = 60 * 60
 
-// Errors raised by submit_safety_form, mapped to messages the farmer can act on.
+// Errors raised by submit_safety_form, mapped to messages the framer can act on.
 const SUBMIT_ERRORS: Record<string, string> = {
   not_authenticated: "Your session has expired. Please log in again.",
-  farmers_only: "Only farmers can submit safety forms.",
+  framers_only: "Only framers can submit safety forms.",
   invalid_job_site: "That job site isn't available. Choose another.",
   invalid_date: "Date can't be in the future.",
   invalid_photo_count: `Add between 1 and ${MAX_PHOTOS} photos.`,
@@ -60,7 +60,7 @@ const LIST_COLUMNS = `
   worker:profiles!safety_forms_worker_id_fkey (id, first_name, last_name)
 `
 
-// RLS limits farmers to their own forms, so the same query serves both dashboards.
+// RLS limits framers to their own forms, so the same query serves both dashboards.
 // An exact count is cheap at tens of thousands of rows, and gives the "of N" and last page.
 function selectForms(supabase: Client, filters: FormFilters, { head = false } = {}) {
   let query = supabase.from("safety_forms").select(LIST_COLUMNS, { count: "exact", head })
@@ -141,7 +141,7 @@ export async function getSafetyForm(supabase: Client, id: number) {
     },
     checklist: toChecklist(form),
     notes: form.notes,
-    // Farmers can't read other profiles, so they see that a form was reviewed but not by whom.
+    // Framers can't read other profiles, so they see that a form was reviewed but not by whom.
     review: form.reviewed_at
       ? {
           reviewedAt: form.reviewed_at,
@@ -198,7 +198,7 @@ export async function listWorkers(supabase: Client) {
   const { data, error } = await supabase
     .from("profiles")
     .select("id, first_name, last_name")
-    .eq("role", "farmer")
+    .eq("role", "framer")
     .order("last_name")
     .order("first_name")
   if (error) throw error

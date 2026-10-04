@@ -7,8 +7,8 @@ import { PHOTO_BUCKET } from "@/features/safety-forms/photos"
 
 // Seeded in supabase/seed.sql.
 export const USERS = {
-  farmer: { id: "11111111-1111-1111-1111-111111111111", email: "farmer@ras.test" },
-  otherFarmer: { id: "33333333-3333-3333-3333-333333333333", email: "priya.sandhu@ras.test" },
+  framer: { id: "11111111-1111-1111-1111-111111111111", email: "framer@ras.test" },
+  otherFramer: { id: "33333333-3333-3333-3333-333333333333", email: "priya.sandhu@ras.test" },
   admin: { id: "22222222-2222-2222-2222-222222222222", email: "admin@ras.test" },
 } as const
 

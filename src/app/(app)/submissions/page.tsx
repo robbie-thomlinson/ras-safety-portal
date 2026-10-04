@@ -29,7 +29,7 @@ export default async function SubmissionsPage({ searchParams }: PageProps<"/subm
   const params = await searchParams
   const page = parsePage(params.page)
 
-  if (user.role === "farmer") {
+  if (user.role === "framer") {
     const forms = await listSafetyForms(supabase, {}, { page })
     redirectPastLastPage(forms, params)
     return (

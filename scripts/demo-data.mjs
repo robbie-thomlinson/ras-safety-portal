@@ -1,5 +1,5 @@
 // Fills the local database with two weeks of safety forms so the dashboards have something to show.
-// Goes through the app's real path: each seeded farmer signs in, uploads photos and calls
+// Goes through the app's real path: each seeded framer signs in, uploads photos and calls
 // submit_safety_form; an admin then reviews the older ones. Run `npm run db:reset` first for a clean slate.
 import { execSync } from "node:child_process"
 import { crc32, deflateSync } from "node:zlib"
@@ -9,8 +9,8 @@ import { createClient } from "@supabase/supabase-js"
 const DAYS = 14
 const PASSWORD = "password123"
 // Frank and Mei are left without a form today, so both "not submitted" states show up.
-const FARMERS = [
-  { email: "farmer@ras.test", today: false },
+const FRAMERS = [
+  { email: "framer@ras.test", today: false },
   { email: "priya.sandhu@ras.test", today: true },
   { email: "tom.bergstrom@ras.test", today: true },
   { email: "mei.chen@ras.test", today: false },
@@ -82,11 +82,11 @@ const { data: sites, error: sitesError } = await admin.from("job_sites").select(
 if (sitesError) throw sitesError
 
 let created = 0
-for (const farmer of FARMERS) {
-  const { client, userId } = await signIn(farmer.email)
+for (const framer of FRAMERS) {
+  const { client, userId } = await signIn(framer.email)
   for (let offset = DAYS - 1; offset >= 0; offset--) {
     const date = addDays(today, -offset)
-    if (offset === 0 ? !farmer.today : random() < 0.2) continue
+    if (offset === 0 ? !framer.today : random() < 0.2) continue
 
     const photoPaths = []
     for (let i = 0; i < 1 + Math.floor(random() * 3); i++) {

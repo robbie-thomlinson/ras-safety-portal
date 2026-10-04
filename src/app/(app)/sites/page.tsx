@@ -62,7 +62,7 @@ export default async function SitesPage() {
           ))}
         </ul>
       ) : (
-        <EmptyState icon={MapPinIcon} title="No job sites" description="Add a site so farmers can submit forms for it." />
+        <EmptyState icon={MapPinIcon} title="No job sites" description="Add a site so framers can submit forms for it." />
       )}
     </>
   )

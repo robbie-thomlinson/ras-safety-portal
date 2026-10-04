@@ -5,14 +5,14 @@ import { anonClient, serviceClient, signIn, USERS } from "@/test/supabase"
 import { getUserFromClient } from "./data"
 
 describe("getUserFromClient", () => {
-  it("returns the farmer with their role from profiles", async () => {
-    const user = await getUserFromClient(await signIn("farmer"))
+  it("returns the framer with their role from profiles", async () => {
+    const user = await getUserFromClient(await signIn("framer"))
     expect(user).toEqual({
-      id: USERS.farmer.id,
-      email: USERS.farmer.email,
-      role: "farmer",
+      id: USERS.framer.id,
+      email: USERS.framer.email,
+      role: "framer",
       firstName: "Frank",
-      lastName: "Farmer",
+      lastName: "Framer",
     })
   })
 
@@ -25,7 +25,7 @@ describe("getUserFromClient", () => {
   })
 
   it("rejects a wrong password", async () => {
-    const { error } = await anonClient().auth.signInWithPassword({ email: USERS.farmer.email, password: "wrong" })
+    const { error } = await anonClient().auth.signInWithPassword({ email: USERS.framer.email, password: "wrong" })
     expect(error).not.toBeNull()
   })
 })
@@ -61,7 +61,7 @@ describe("accounts created through the admin API", () => {
     }
     expect(await signInAs()).toMatchObject({ role: "admin", firstName: "New", lastName: "Admin" })
 
-    await service.auth.admin.updateUserById(userId, { app_metadata: { role: "farmer" } })
-    expect((await signInAs())?.role).toBe("farmer")
+    await service.auth.admin.updateUserById(userId, { app_metadata: { role: "framer" } })
+    expect((await signInAs())?.role).toBe("framer")
   })
 })

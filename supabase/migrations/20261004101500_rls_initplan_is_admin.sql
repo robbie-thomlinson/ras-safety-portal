@@ -6,11 +6,11 @@ alter policy "Users see their own profile; admins see all"
   on public.profiles
   using (id = (select auth.uid()) or (select public.is_admin()));
 
-alter policy "Farmers see their own forms; admins see all"
+alter policy "Framers see their own forms; admins see all"
   on public.safety_forms
   using (worker_id = (select auth.uid()) or (select public.is_admin()));
 
-alter policy "Farmers read their own photos; admins read all"
+alter policy "Framers read their own photos; admins read all"
   on storage.objects
   using (
     bucket_id = 'safety-photos'

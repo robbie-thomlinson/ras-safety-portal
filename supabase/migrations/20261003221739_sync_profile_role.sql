@@ -11,7 +11,7 @@ set search_path = ''
 as $$
 begin
   update public.profiles
-  set role = coalesce((new.raw_app_meta_data ->> 'role')::public.user_role, 'farmer')
+  set role = coalesce((new.raw_app_meta_data ->> 'role')::public.user_role, 'framer')
   where id = new.id;
   return new;
 end;

@@ -61,7 +61,7 @@ export function JobSiteDialog({ site, trigger }: { site?: JobSite; trigger: Reac
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
           <DialogHeader>
             <DialogTitle>{site ? "Edit job site" : "Add job site"}</DialogTitle>
-            <DialogDescription>Farmers choose from active job sites when they fill in a form.</DialogDescription>
+            <DialogDescription>Framers choose from active job sites when they fill in a form.</DialogDescription>
           </DialogHeader>
           <FieldGroup>
             <Field data-invalid={!!errors.name}>

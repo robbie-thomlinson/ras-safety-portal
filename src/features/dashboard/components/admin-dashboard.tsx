@@ -31,7 +31,7 @@ export function AdminDashboard({ summary }: { summary: DashboardSummary }) {
         <StatCard icon={ClipboardListIcon} label="Forms today" value={totals.submittedToday} />
         <StatCard
           icon={UsersIcon}
-          label="Farmers submitted today"
+          label="Framers submitted today"
           value={`${submittedCount} / ${totals.workers}`}
         />
         <StatCard
@@ -59,8 +59,8 @@ export function AdminDashboard({ summary }: { summary: DashboardSummary }) {
             <CardTitle className="text-xl">Not submitted today</CardTitle>
             <CardDescription>
               {summary.notSubmittedToday.length === 0
-                ? "Every farmer has submitted a form today."
-                : `${summary.notSubmittedToday.length} of ${totals.workers} farmers`}
+                ? "Every framer has submitted a form today."
+                : `${summary.notSubmittedToday.length} of ${totals.workers} framers`}
             </CardDescription>
           </CardHeader>
           <CardContent>

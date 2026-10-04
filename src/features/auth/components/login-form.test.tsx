@@ -13,11 +13,11 @@ describe("LoginForm", () => {
     const user = userEvent.setup()
     render(<LoginForm />)
 
-    await user.type(screen.getByLabelText("Email"), "farmer@ras.test")
+    await user.type(screen.getByLabelText("Email"), "framer@ras.test")
     await user.type(screen.getByLabelText("Password"), "wrong")
     await user.click(screen.getByRole("button", { name: "Sign in" }))
 
     expect(await screen.findByText("Invalid email or password.")).toBeInTheDocument()
-    expect(screen.getByLabelText("Email")).toHaveValue("farmer@ras.test")
+    expect(screen.getByLabelText("Email")).toHaveValue("framer@ras.test")
   })
 })

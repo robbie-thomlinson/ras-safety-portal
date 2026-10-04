@@ -113,7 +113,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "form_status": "submitted"|"reviewed","user_role": "farmer"|"admin"
+            "form_status": "submitted"|"reviewed","user_role": "framer"|"admin"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -233,7 +233,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "form_status": ["submitted", "reviewed"],"user_role": ["farmer", "admin"]
+            "form_status": ["submitted", "reviewed"],"user_role": ["framer", "admin"]
           }
         }
 } as const

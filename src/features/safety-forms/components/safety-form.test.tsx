@@ -27,8 +27,8 @@ function renderForm() {
       userId={USER_ID}
       today={todayInRasTimeZone()}
       jobSites={[
-        { id: 1, name: "Saanichton Dairy Barn" },
-        { id: 2, name: "Metchosin Hay Barn" },
+        { id: 1, name: "Mount Newton Townhomes" },
+        { id: 2, name: "Happy Valley Residence" },
       ]}
     />
   )
@@ -36,12 +36,12 @@ function renderForm() {
 }
 
 async function fillIn(user: ReturnType<typeof userEvent.setup>) {
-  await user.selectOptions(screen.getByLabelText("Job site"), "Metchosin Hay Barn")
+  await user.selectOptions(screen.getByLabelText("Job site"), "Happy Valley Residence")
   for (const group of screen.getAllByRole("radiogroup")) {
     await user.click(within(group).getByRole("radio", { name: "Yes" }))
   }
   await user.click(within(screen.getByRole("radiogroup", { name: "Ladders inspected" })).getByRole("radio", { name: "No" }))
-  await user.upload(screen.getByLabelText("Add photos"), new File(["png"], "barn.png", { type: "image/png" }))
+  await user.upload(screen.getByLabelText("Add photos"), new File(["png"], "site.png", { type: "image/png" }))
   await waitFor(() => expect(screen.queryByLabelText("Uploading")).not.toBeInTheDocument())
 }
 

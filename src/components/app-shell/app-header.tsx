@@ -8,7 +8,7 @@ import { NavLinks, type NavLink } from "./nav-links"
 import { UserMenu } from "./user-menu"
 
 const LINKS: Record<CurrentUser["role"], NavLink[]> = {
-  farmer: [
+  framer: [
     { href: "/", label: "Home" },
     { href: "/submissions", label: "My forms" },
   ],

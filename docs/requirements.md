@@ -13,12 +13,12 @@
 #### Auth
 
 - [ ] Users log in to the system
-- [ ] 2 roles: farmer and admin
-- [ ] Farmers can create submissions
-- [ ] Farmer can view only their submissions
+- [ ] 2 roles: framer and admin
+- [ ] Framers can create submissions
+- [ ] Framer can view only their submissions
 - [ ] Admin can view all submissions
 
-#### Farmer Dashboard
+#### Framer Dashboard
 
 ##### Safety form
 - [ ] Select job site
@@ -46,6 +46,6 @@
 
 - [ ] Entity relationship diagram (ERD)
 - [ ] Public or private github repo
-- [ ] Provided credentials for at least 1 farmer
+- [ ] Provided credentials for at least 1 framer
 - [ ] Provided credentials for at least 1 admin
 - [ ] README with: setup instructions, tech stack, and assumptions

@@ -2,7 +2,7 @@ import "server-only"
 
 import type { Client } from "@/lib/supabase/types"
 
-export type Role = "farmer" | "admin"
+export type Role = "framer" | "admin"
 
 export type CurrentUser = {
   id: string

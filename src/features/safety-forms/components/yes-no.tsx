@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 const option =
   "flex h-9 min-w-16 items-center justify-center rounded-md px-4 text-sm font-semibold text-muted-foreground outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
 
-// A checklist answer. Starts unanswered so farmers have to make a choice for every item.
+// A checklist answer. Starts unanswered so framers have to make a choice for every item.
 export function YesNo({
   value,
   onChange,

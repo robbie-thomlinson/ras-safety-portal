@@ -18,7 +18,7 @@ const valid: SafetyFormInput = {
   toolsInspected: true,
   cordsInspected: true,
   hazardsIdentified: false,
-  notes: "  Wet ground near the barn  ",
+  notes: "  Wet ground near the excavation  ",
   photoPaths: [`${USER_ID}/aaaaaaaa-0000-0000-0000-000000000001.jpg`],
 }
 
@@ -34,7 +34,7 @@ describe("safetyFormSchema", () => {
 
   it("accepts a complete form and trims notes", () => {
     const result = safetyFormSchema.parse(valid)
-    expect(result.notes).toBe("Wet ground near the barn")
+    expect(result.notes).toBe("Wet ground near the excavation")
     expect(result.jobSiteId).toBe(1)
   })
 

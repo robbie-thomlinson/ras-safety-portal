@@ -34,20 +34,46 @@ const SITES: JobSite[] = [
 ]
 
 function renderList({
+  sites = SITES,
   query = "",
   status = "active",
-}: { query?: string; status?: SiteStatus } = {}) {
-  render(<JobSiteList sites={SITES} initialQuery={query} initialStatus={status} />)
+  page,
+  pageSize,
+}: {
+  sites?: JobSite[]
+  query?: string
+  status?: SiteStatus
+  page?: number
+  pageSize?: number
+} = {}) {
+  render(
+    <JobSiteList
+      sites={sites}
+      initialQuery={query}
+      initialStatus={status}
+      initialPage={page}
+      pageSize={pageSize}
+    />,
+  )
   return userEvent.setup()
 }
 
+// The name is the first cell's bold text; the header row has no cells.
 function shownNames() {
-  const list = screen.queryByRole("list")
-  if (!list) return []
-  return within(list)
-    .getAllByRole("listitem")
-    .map((item) => SITES.find((site) => item.textContent.startsWith(site.name))?.name)
+  const table = screen.queryByRole("table")
+  if (!table) return []
+  return within(table)
+    .getAllByRole("row")
+    .slice(1)
+    .map((row) => within(row).getAllByRole("cell")[0]?.querySelector("span")?.textContent)
 }
+
+const MANY: JobSite[] = Array.from({ length: 7 }, (_, i) => ({
+  id: i + 1,
+  name: `Site ${i + 1}`,
+  address: `${i + 1} Main St, ${i < 5 ? "Victoria" : "Sooke"}`,
+  archivedAt: null,
+}))
 
 beforeEach(() => window.history.replaceState(null, "", "/sites"))
 
@@ -106,5 +132,45 @@ describe("JobSiteList", () => {
 
     await user.type(search, "nowhere{Escape}")
     expect(search).toHaveValue("")
+  })
+
+  it("pages through the results, keeping the page in the URL", async () => {
+    const user = renderList({ sites: MANY, pageSize: 3 })
+    expect(shownNames()).toEqual(["Site 1", "Site 2", "Site 3"])
+    expect(screen.getByRole("navigation", { name: "Pagination" })).toHaveTextContent(
+      "Showing 1–3 of 7",
+    )
+
+    await user.click(screen.getByRole("link", { name: "Next page" }))
+    expect(shownNames()).toEqual(["Site 4", "Site 5", "Site 6"])
+    expect(window.location.search).toBe("?page=2")
+
+    await user.click(screen.getByRole("link", { name: "Page 3" }))
+    expect(shownNames()).toEqual(["Site 7"])
+    expect(screen.getByRole("link", { name: "Page 3" })).toHaveAttribute("aria-current", "page")
+  })
+
+  it("goes back to the first page when the search changes", async () => {
+    const user = renderList({ sites: MANY, pageSize: 3, page: 2 })
+    expect(shownNames()).toEqual(["Site 4", "Site 5", "Site 6"])
+
+    await user.type(screen.getByRole("textbox", { name: "Search job sites" }), "sooke")
+    expect(shownNames()).toEqual(["Site 6", "Site 7"])
+    expect(window.location.search).toBe("?q=sooke")
+    // One page of results needs no pagination.
+    expect(screen.queryByRole("navigation", { name: "Pagination" })).not.toBeInTheDocument()
+  })
+
+  it("shows the last page for a page number past the end", () => {
+    renderList({ sites: MANY, pageSize: 3, page: 9 })
+    expect(shownNames()).toEqual(["Site 7"])
+  })
+
+  it("keeps the filters in the page links", () => {
+    renderList({ sites: MANY, query: "victoria", status: "all", pageSize: 3 })
+    expect(screen.getByRole("link", { name: "Next page" })).toHaveAttribute(
+      "href",
+      "/sites?q=victoria&status=all&page=2",
+    )
   })
 })

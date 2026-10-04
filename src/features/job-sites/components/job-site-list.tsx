@@ -1,9 +1,10 @@
 "use client"
 
 import { SearchIcon, SearchXIcon, XIcon } from "lucide-react"
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 import { EmptyState } from "@/components/empty-state"
+import { Pagination } from "@/components/pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,6 +14,15 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { DEFAULT_PAGE_SIZE, pageHref, pageRange, paginated } from "@/lib/pagination"
 import { cn } from "@/lib/utils"
 
 import type { JobSite } from "../data"
@@ -26,37 +36,63 @@ const STATUS_LABELS: Record<SiteStatus, string> = {
   all: "All sites",
 }
 
-// Every site is already loaded (there are few enough), so filtering happens here as you type, with no
-// server round trip. The search is still mirrored into the URL so a refresh or Back keeps it.
+const PATH = "/sites"
+
+// The filters as URL params, leaving the defaults off.
+function filterParams(query: string, status: SiteStatus) {
+  return {
+    q: query.trim() || undefined,
+    status: status === "active" ? undefined : status,
+  }
+}
+
+// Every site is already loaded (there are few enough), so filtering and paging happen here, with no
+// server round trip. Both are still mirrored into the URL so a refresh or Back keeps them.
 export function JobSiteList({
   sites,
   initialQuery,
   initialStatus,
+  initialPage = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
 }: {
   sites: JobSite[]
   initialQuery: string
   initialStatus: SiteStatus
+  initialPage?: number
+  pageSize?: number
 }) {
   const [query, setQuery] = useState(initialQuery)
   const [status, setStatus] = useState(initialStatus)
+  const [requestedPage, setRequestedPage] = useState(initialPage)
+  const top = useRef<HTMLDivElement>(null)
 
-  function change(next: { query?: string; status?: SiteStatus }) {
+  // A new search or status starts again from the first page.
+  function change(next: { query?: string; status?: SiteStatus; page?: number }) {
     const q = next.query ?? query
     const s = next.status ?? status
+    const p = next.page ?? 1
     setQuery(q)
     setStatus(s)
-    const params = new URLSearchParams()
-    if (q.trim()) params.set("q", q.trim())
-    if (s !== "active") params.set("status", s)
+    setRequestedPage(p)
     // The native history API updates the URL without re-rendering the page on the server.
-    window.history.replaceState(null, "", params.size ? `?${params}` : window.location.pathname)
+    window.history.replaceState(null, "", pageHref(PATH, filterParams(q, s), p))
+  }
+
+  function changePage(p: number) {
+    change({ page: p })
+    // Like following a link, a new page starts at the top of the results.
+    if (top.current && top.current.getBoundingClientRect().top < 0) top.current.scrollIntoView?.()
   }
 
   const found = sites.filter((site) => matchesQuery(site, query))
   const shown = found.filter((site) => matchesStatus(site, status))
+  // A stale or hand-edited page past the end shows the last page.
+  const page = Math.min(requestedPage, Math.max(Math.ceil(shown.length / pageSize), 1))
+  const [from, to] = pageRange({ page, pageSize })
+  const result = paginated(shown.slice(from, to + 1), shown.length, { page, pageSize })
 
   return (
-    <div className="flex flex-col gap-3">
+    <div ref={top} className="flex scroll-mt-4 flex-col gap-3">
       <div role="search" className="flex flex-col gap-2 sm:flex-row">
         <InputGroup className="h-9 bg-card sm:flex-1">
           <InputGroupAddon>
@@ -98,35 +134,67 @@ export function JobSiteList({
       </div>
 
       {shown.length ? (
-        <ul className="divide-y rounded-xl border bg-card">
-          {shown.map((site) => (
-            <li key={site.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-              <div
-                className={cn(
-                  "flex min-w-0 flex-1 flex-col gap-0.5",
-                  site.archivedAt && "opacity-60",
-                )}
-              >
-                <span className="flex items-center gap-2 font-semibold">
-                  {site.name}
-                  {site.archivedAt && <Badge variant="outline">Archived</Badge>}
-                </span>
-                <span className="text-sm text-muted-foreground">{site.address}</span>
-              </div>
-              <div className="flex gap-1 self-end sm:self-auto">
-                <JobSiteDialog
-                  site={site}
-                  trigger={
-                    <Button variant="ghost" size="sm">
-                      Edit
-                    </Button>
-                  }
-                />
-                <ArchiveButton id={site.id} archived={!!site.archivedAt} />
-              </div>
-            </li>
-          ))}
-        </ul>
+        <>
+          <div className="rounded-xl border bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="pl-4">Name</TableHead>
+                  <TableHead className="hidden md:table-cell">Address</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="pr-4">
+                    <span className="sr-only">Actions</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {result.items.map((site) => (
+                  <TableRow key={site.id}>
+                    {/* Phones have no room for the address column, so it goes under the name. */}
+                    <TableCell
+                      className={cn(
+                        "pl-4 whitespace-normal",
+                        site.archivedAt && "text-muted-foreground",
+                      )}
+                    >
+                      <span className="font-semibold">{site.name}</span>
+                      <span className="block text-muted-foreground md:hidden">{site.address}</span>
+                    </TableCell>
+                    <TableCell className="hidden whitespace-normal text-muted-foreground md:table-cell">
+                      {site.address}
+                    </TableCell>
+                    <TableCell>
+                      {site.archivedAt ? (
+                        <Badge variant="outline">Archived</Badge>
+                      ) : (
+                        <Badge variant="secondary">Active</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="pr-4">
+                      <div className="flex justify-end gap-1">
+                        <JobSiteDialog
+                          site={site}
+                          trigger={
+                            <Button variant="ghost" size="sm">
+                              Edit
+                            </Button>
+                          }
+                        />
+                        <ArchiveButton id={site.id} archived={!!site.archivedAt} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <Pagination
+            result={result}
+            pathname={PATH}
+            searchParams={filterParams(query, status)}
+            onPageChange={changePage}
+          />
+        </>
       ) : (
         <EmptyState
           icon={SearchXIcon}

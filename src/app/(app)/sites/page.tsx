@@ -9,6 +9,7 @@ import { JobSiteDialog } from "@/features/job-sites/components/job-site-dialog"
 import { JobSiteList } from "@/features/job-sites/components/job-site-list"
 import { listJobSites } from "@/features/job-sites/data"
 import { parseSiteStatus } from "@/features/job-sites/filter"
+import { parsePage } from "@/lib/pagination"
 import { createClient } from "@/lib/supabase/server"
 
 export const metadata: Metadata = { title: "Job sites" }
@@ -43,6 +44,7 @@ export default async function SitesPage({ searchParams }: PageProps<"/sites">) {
           sites={sorted}
           initialQuery={firstValue(params.q) ?? ""}
           initialStatus={parseSiteStatus(firstValue(params.status))}
+          initialPage={parsePage(params.page)}
         />
       ) : (
         <EmptyState

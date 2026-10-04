@@ -21,9 +21,16 @@ export function UserMenu({ user }: { user: CurrentUser }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-lg" className="rounded-full hover:bg-white/10" aria-label="Account menu">
+        <Button
+          variant="ghost"
+          size="icon-lg"
+          className="rounded-full hover:bg-white/10"
+          aria-label="Account menu"
+        >
           <Avatar>
-            <AvatarFallback className="bg-brand-green-100 font-semibold text-brand-green-900">{initials}</AvatarFallback>
+            <AvatarFallback className="bg-brand-green-100 font-semibold text-brand-green-900">
+              {initials}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

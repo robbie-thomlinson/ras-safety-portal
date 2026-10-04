@@ -30,7 +30,7 @@ function renderForm() {
         { id: 1, name: "Mount Newton Townhomes" },
         { id: 2, name: "Happy Valley Residence" },
       ]}
-    />
+    />,
   )
   return userEvent.setup()
 }
@@ -40,8 +40,15 @@ async function fillIn(user: ReturnType<typeof userEvent.setup>) {
   for (const group of screen.getAllByRole("radiogroup")) {
     await user.click(within(group).getByRole("radio", { name: "Yes" }))
   }
-  await user.click(within(screen.getByRole("radiogroup", { name: "Ladders inspected" })).getByRole("radio", { name: "No" }))
-  await user.upload(screen.getByLabelText("Add photos"), new File(["png"], "site.png", { type: "image/png" }))
+  await user.click(
+    within(screen.getByRole("radiogroup", { name: "Ladders inspected" })).getByRole("radio", {
+      name: "No",
+    }),
+  )
+  await user.upload(
+    screen.getByLabelText("Add photos"),
+    new File(["png"], "site.png", { type: "image/png" }),
+  )
   await waitFor(() => expect(screen.queryByLabelText("Uploading")).not.toBeInTheDocument())
 }
 
@@ -55,7 +62,11 @@ describe("SafetyForm", () => {
     await user.click(screen.getByRole("button", { name: "Submit safety form" }))
 
     const errors = (await screen.findAllByRole("alert")).map((alert) => alert.textContent)
-    expect(errors).toEqual(["Choose a job site", ...Array(10).fill("Answer this checklist item"), "Add at least one photo"])
+    expect(errors).toEqual([
+      "Choose a job site",
+      ...Array(10).fill("Answer this checklist item"),
+      "Add at least one photo",
+    ])
     expect(submit).not.toHaveBeenCalled()
   })
 
@@ -74,7 +85,7 @@ describe("SafetyForm", () => {
         hardHatWorn: true,
         laddersInspected: false,
         photoPaths: [expect.stringMatching(new RegExp(`^${USER_ID}/.+\\.png$`))],
-      })
+      }),
     )
   })
 
@@ -84,7 +95,9 @@ describe("SafetyForm", () => {
     await fillIn(user)
     await user.click(screen.getByRole("button", { name: "Submit safety form" }))
 
-    expect(await screen.findByText("That job site isn't available. Choose another.")).toBeInTheDocument()
+    expect(
+      await screen.findByText("That job site isn't available. Choose another."),
+    ).toBeInTheDocument()
     expect(push).not.toHaveBeenCalled()
     expect(screen.getByRole("button", { name: "Submit safety form" })).toBeEnabled()
   })

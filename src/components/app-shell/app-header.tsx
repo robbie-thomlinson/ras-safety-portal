@@ -26,8 +26,17 @@ export function AppHeader({ user }: { user: CurrentUser }) {
     <AutoHideHeader className="bg-primary text-primary-foreground shadow-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <Image src="/brand/ras-mark-white.png" alt="RAS" width={48} height={32} priority className="h-7 w-auto" />
-          <span className="font-heading text-lg font-semibold tracking-wide uppercase">Site Safety</span>
+          <Image
+            src="/brand/ras-mark-white.png"
+            alt="RAS"
+            width={48}
+            height={32}
+            priority
+            className="h-7 w-auto"
+          />
+          <span className="font-heading text-lg font-semibold tracking-wide uppercase">
+            Site Safety
+          </span>
         </Link>
         <NavLinks links={links} className="hidden md:flex" />
         <div className="ml-auto">

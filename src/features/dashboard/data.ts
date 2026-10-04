@@ -18,7 +18,10 @@ export async function getDashboardSummary(supabase: Client, today = todayInRasTi
       .select(`date, worker_id, job_site_id, ${CHECKLIST_COLUMNS}`)
       .gte("date", from)
       .lte("date", today),
-    supabase.from("safety_forms").select("id", { count: "exact", head: true }).eq("status", "submitted"),
+    supabase
+      .from("safety_forms")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "submitted"),
     listWorkers(supabase),
     listJobSites(supabase, { includeArchived: true }),
   ])

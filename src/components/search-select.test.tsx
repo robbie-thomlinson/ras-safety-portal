@@ -12,18 +12,29 @@ const WORKERS: SearchSelectOption[] = [
 
 function renderSelect(value?: string) {
   const onChange = vi.fn()
-  render(<SearchSelect value={value} options={WORKERS} placeholder="All workers" onChange={onChange} />)
+  render(
+    <SearchSelect value={value} options={WORKERS} placeholder="All workers" onChange={onChange} />,
+  )
   return { onChange, user: userEvent.setup(), input: screen.getByRole("combobox") }
 }
 
 describe("SearchSelect", () => {
   it("shows the selected name, or is empty when nothing is selected", () => {
-    const { unmount } = render(<SearchSelect value={undefined} options={WORKERS} placeholder="All workers" onChange={vi.fn()} />)
+    const { unmount } = render(
+      <SearchSelect
+        value={undefined}
+        options={WORKERS}
+        placeholder="All workers"
+        onChange={vi.fn()}
+      />,
+    )
     expect(screen.getByRole("combobox")).toHaveValue("")
     expect(screen.getByRole("combobox")).toHaveAttribute("placeholder", "All workers")
     unmount()
 
-    render(<SearchSelect value="b2" options={WORKERS} placeholder="All workers" onChange={vi.fn()} />)
+    render(
+      <SearchSelect value="b2" options={WORKERS} placeholder="All workers" onChange={vi.fn()} />,
+    )
     expect(screen.getByRole("combobox")).toHaveValue("Ben Smith")
   })
 
@@ -31,7 +42,10 @@ describe("SearchSelect", () => {
     const { onChange, user, input } = renderSelect()
     await user.type(input, "smith")
 
-    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual(["Ben Smith", "Cara SmithersArchived"])
+    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual([
+      "Ben Smith",
+      "Cara SmithersArchived",
+    ])
     await user.click(screen.getByRole("option", { name: /Cara Smithers/ }))
     expect(onChange).toHaveBeenCalledWith("c3")
     expect(screen.queryByRole("option")).not.toBeInTheDocument()

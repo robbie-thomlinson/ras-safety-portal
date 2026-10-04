@@ -36,7 +36,9 @@ export function SearchSelect({
   const text = query ?? selected?.name ?? ""
   const search = query?.trim().toLowerCase() ?? ""
   // Plain substring match on the name; cmdk's fuzzy scoring reorders results and matches stray letters.
-  const matches = search ? options.filter((option) => option.name.toLowerCase().includes(search)) : options
+  const matches = search
+    ? options.filter((option) => option.name.toLowerCase().includes(search))
+    : options
 
   function close() {
     setOpen(false)
@@ -49,7 +51,10 @@ export function SearchSelect({
   }
 
   return (
-    <Command shouldFilter={false} className={cn("relative h-auto overflow-visible bg-transparent p-0", className)}>
+    <Command
+      shouldFilter={false}
+      className={cn("relative h-auto overflow-visible bg-transparent p-0", className)}
+    >
       <InputGroup className="h-9">
         <InputGroupAddon>
           <SearchIcon />

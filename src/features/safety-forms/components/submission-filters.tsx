@@ -35,19 +35,28 @@ export function SubmissionFilters({
     const params = new URLSearchParams()
     const next = { ...filters, ...changes }
     for (const [key, value] of Object.entries(next)) if (value) params.set(key, String(value))
-    startTransition(() => router.replace(params.size ? `${pathname}?${params}` : pathname, { scroll: false }))
+    startTransition(() =>
+      router.replace(params.size ? `${pathname}?${params}` : pathname, { scroll: false }),
+    )
   }
 
   const active = Object.values(filters).some(Boolean)
   // Active sites first, then archived ones (still searchable for their past forms), each alphabetical.
   const siteOptions: SearchSelectOption[] = [...sites]
     .sort((a, b) => Number(!!a.archivedAt) - Number(!!b.archivedAt))
-    .map((site) => ({ id: site.id, name: site.name, tag: site.archivedAt ? "Archived" : undefined }))
+    .map((site) => ({
+      id: site.id,
+      name: site.name,
+      tag: site.archivedAt ? "Archived" : undefined,
+    }))
 
   return (
     <section
       aria-labelledby="filters-heading"
-      className={cn("flex flex-col gap-3 rounded-xl border bg-card p-4 transition-opacity", pending && "opacity-60")}
+      className={cn(
+        "flex flex-col gap-3 rounded-xl border bg-card p-4 transition-opacity",
+        pending && "opacity-60",
+      )}
     >
       {/* Fixed height so "Clear all" appearing doesn't nudge the filters down. */}
       <div className="flex h-6 items-center justify-between">

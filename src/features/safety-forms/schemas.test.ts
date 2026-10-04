@@ -47,7 +47,9 @@ describe("safetyFormSchema", () => {
   })
 
   it("rejects a future date", () => {
-    expect(fieldErrors({ ...valid, date: "2026-10-04" }).date).toEqual(["Date can't be in the future"])
+    expect(fieldErrors({ ...valid, date: "2026-10-04" }).date).toEqual([
+      "Date can't be in the future",
+    ])
   })
 
   it("rejects a badly formatted date", () => {
@@ -55,7 +57,9 @@ describe("safetyFormSchema", () => {
   })
 
   it("requires every checklist item to be answered", () => {
-    expect(fieldErrors({ ...valid, hardHatWorn: undefined }).hardHatWorn).toEqual(["Answer this checklist item"])
+    expect(fieldErrors({ ...valid, hardHatWorn: undefined }).hardHatWorn).toEqual([
+      "Answer this checklist item",
+    ])
   })
 
   it("requires at least one photo", () => {
@@ -63,19 +67,26 @@ describe("safetyFormSchema", () => {
   })
 
   it("allows at most 10 photos", () => {
-    const paths = Array.from({ length: 11 }, (_, i) =>
-      `${USER_ID}/aaaaaaaa-0000-0000-0000-0000000000${String(i).padStart(2, "0")}.jpg`
+    const paths = Array.from(
+      { length: 11 },
+      (_, i) => `${USER_ID}/aaaaaaaa-0000-0000-0000-0000000000${String(i).padStart(2, "0")}.jpg`,
     )
-    expect(fieldErrors({ ...valid, photoPaths: paths }).photoPaths).toEqual(["Add no more than 10 photos"])
+    expect(fieldErrors({ ...valid, photoPaths: paths }).photoPaths).toEqual([
+      "Add no more than 10 photos",
+    ])
   })
 
   it("rejects duplicate photos", () => {
     const path = valid.photoPaths[0]
-    expect(fieldErrors({ ...valid, photoPaths: [path, path] }).photoPaths).toEqual(["Each photo can only be added once"])
+    expect(fieldErrors({ ...valid, photoPaths: [path, path] }).photoPaths).toEqual([
+      "Each photo can only be added once",
+    ])
   })
 
   it("rejects notes over 2000 characters", () => {
-    expect(fieldErrors({ ...valid, notes: "a".repeat(2001) }).notes).toEqual(["Notes must be 2000 characters or fewer"])
+    expect(fieldErrors({ ...valid, notes: "a".repeat(2001) }).notes).toEqual([
+      "Notes must be 2000 characters or fewer",
+    ])
   })
 })
 
@@ -85,15 +96,22 @@ describe("formFiltersSchema", () => {
   })
 
   it("coerces search params", () => {
-    expect(formFiltersSchema.parse({ jobSiteId: "3", from: "2026-10-01" })).toEqual({ jobSiteId: 3, from: "2026-10-01" })
+    expect(formFiltersSchema.parse({ jobSiteId: "3", from: "2026-10-01" })).toEqual({
+      jobSiteId: 3,
+      from: "2026-10-01",
+    })
   })
 
   it("rejects a start date after the end date", () => {
-    expect(formFiltersSchema.safeParse({ from: "2026-10-05", to: "2026-10-01" }).success).toBe(false)
+    expect(formFiltersSchema.safeParse({ from: "2026-10-05", to: "2026-10-01" }).success).toBe(
+      false,
+    )
   })
 
   it("accepts the seeded worker ids, which aren't RFC 4122 uuids", () => {
-    expect(formFiltersSchema.parse({ workerId: "33333333-3333-3333-3333-333333333333" }).workerId).toBeDefined()
+    expect(
+      formFiltersSchema.parse({ workerId: "33333333-3333-3333-3333-333333333333" }).workerId,
+    ).toBeDefined()
   })
 
   it("rejects a worker id that isn't a uuid", () => {

@@ -38,7 +38,7 @@ beforeAll(async () => {
       cordsInspected: true,
       hazardsIdentified: true,
       photoPaths: [path],
-    })
+    }),
   )
 })
 

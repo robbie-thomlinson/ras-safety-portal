@@ -19,5 +19,7 @@ export default async function HomePage() {
     listSafetyForms(supabase, {}, { pageSize: 5 }),
     listSafetyForms(supabase, { from: today, to: today }),
   ])
-  return <FramerHome user={user} today={today} todaysForms={todays.items} recentForms={recent.items} />
+  return (
+    <FramerHome user={user} today={today} todaysForms={todays.items} recentForms={recent.items} />
+  )
 }

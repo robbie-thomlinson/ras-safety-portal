@@ -11,7 +11,9 @@ describe("validatePhotoFile", () => {
   })
 
   it("rejects other file types", () => {
-    expect(validatePhotoFile({ type: "application/pdf", size: 1 })).toMatch(/JPEG, PNG, WebP or HEIC/)
+    expect(validatePhotoFile({ type: "application/pdf", size: 1 })).toMatch(
+      /JPEG, PNG, WebP or HEIC/,
+    )
   })
 
   it("rejects files over 10 MB", () => {

@@ -21,7 +21,11 @@ export function pageRange({ page, pageSize }: PageRequest): [from: number, to: n
   return [from, from + pageSize - 1]
 }
 
-export function paginated<T>(items: T[], total: number, { page, pageSize }: PageRequest): Paginated<T> {
+export function paginated<T>(
+  items: T[],
+  total: number,
+  { page, pageSize }: PageRequest,
+): Paginated<T> {
   return { items, total, page, pageSize, pageCount: Math.ceil(total / pageSize) }
 }
 
@@ -29,7 +33,8 @@ export function paginated<T>(items: T[], total: number, { page, pageSize }: Page
 // with "gap" where pages are skipped. Gaps of a single page show that page instead.
 export function pageWindow(page: number, pageCount: number, siblings = 1): (number | "gap")[] {
   const pages = new Set([1, pageCount])
-  for (let p = page - siblings; p <= page + siblings; p++) if (p >= 1 && p <= pageCount) pages.add(p)
+  for (let p = page - siblings; p <= page + siblings; p++)
+    if (p >= 1 && p <= pageCount) pages.add(p)
 
   const sorted = [...pages].filter((p) => p >= 1).sort((a, b) => a - b)
   const out: (number | "gap")[] = []

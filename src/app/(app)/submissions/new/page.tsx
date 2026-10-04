@@ -15,7 +15,10 @@ export default async function NewSubmissionPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-      <PageHeader title="New safety form" description="Complete this before starting work at the site." />
+      <PageHeader
+        title="New safety form"
+        description="Complete this before starting work at the site."
+      />
       <SafetyForm userId={user.id} jobSites={sites} today={todayInRasTimeZone()} />
     </div>
   )

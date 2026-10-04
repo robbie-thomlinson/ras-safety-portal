@@ -18,13 +18,23 @@ describe("DateRangePicker", () => {
     expect(screen.getByRole("button")).toHaveTextContent("Any time")
     unmount()
 
-    render(<DateRangePicker value={{ from: "2026-09-28", to: "2026-10-03" }} onChange={vi.fn()} today={TODAY} />)
+    render(
+      <DateRangePicker
+        value={{ from: "2026-09-28", to: "2026-10-03" }}
+        onChange={vi.fn()}
+        today={TODAY}
+      />,
+    )
     expect(screen.getByRole("button")).toHaveTextContent("This week")
   })
 
   it("shows custom and open-ended ranges as dates", () => {
     const { unmount } = render(
-      <DateRangePicker value={{ from: "2026-09-10", to: "2026-09-20" }} onChange={vi.fn()} today={TODAY} />
+      <DateRangePicker
+        value={{ from: "2026-09-10", to: "2026-09-20" }}
+        onChange={vi.fn()}
+        today={TODAY}
+      />,
     )
     expect(screen.getByRole("button")).toHaveTextContent("Sep 10 – Sep 20")
     unmount()

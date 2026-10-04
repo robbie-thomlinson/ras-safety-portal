@@ -12,7 +12,12 @@ declare module "vitest" {
 export default function setup(project: TestProject) {
   let status: Record<string, string>
   try {
-    status = JSON.parse(execSync("npx supabase status -o json", { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }))
+    status = JSON.parse(
+      execSync("npx supabase status -o json", {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      }),
+    )
   } catch {
     throw new Error("Local Supabase isn't running. Start it with `npm run db:start`.")
   }

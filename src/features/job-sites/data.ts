@@ -12,7 +12,12 @@ export async function listJobSites(supabase: Client, { includeArchived = false }
 
   const { data, error } = await query
   if (error) throw error
-  return data.map((site) => ({ id: site.id, name: site.name, address: site.address, archivedAt: site.archived_at }))
+  return data.map((site) => ({
+    id: site.id,
+    name: site.name,
+    address: site.address,
+    archivedAt: site.archived_at,
+  }))
 }
 
 export type JobSite = Awaited<ReturnType<typeof listJobSites>>[number]
@@ -34,7 +39,7 @@ export async function setJobSiteArchived(supabase: Client, id: number, archived:
 async function updateOne(
   supabase: Client,
   id: number,
-  values: { name?: string; address?: string; archived_at?: string | null }
+  values: { name?: string; address?: string; archived_at?: string | null },
 ) {
   const { data, error } = await supabase.from("job_sites").update(values).eq("id", id).select("id")
   if (error) throw error

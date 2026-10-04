@@ -12,7 +12,9 @@ export function PageHeader({
   className?: string
 }) {
   return (
-    <div className={cn("flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between", className)}>
+    <div
+      className={cn("flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between", className)}
+    >
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl text-primary">{title}</h1>
         {description && <p className="text-sm text-muted-foreground">{description}</p>}

@@ -27,7 +27,10 @@ export function usePhotoUploads(userId: string) {
   useEffect(() => {
     latest.current = photos
   }, [photos])
-  useEffect(() => () => latest.current.forEach((p) => p.previewUrl && URL.revokeObjectURL(p.previewUrl)), [])
+  useEffect(
+    () => () => latest.current.forEach((p) => p.previewUrl && URL.revokeObjectURL(p.previewUrl)),
+    [],
+  )
 
   function update(key: string, changes: Partial<UploadedPhoto>) {
     setPhotos((current) => current.map((p) => (p.key === key ? { ...p, ...changes } : p)))
@@ -36,7 +39,9 @@ export function usePhotoUploads(userId: string) {
   async function upload(key: string, file: File) {
     if (!isPhotoType(file.type)) return
     const path = photoPath(userId, file.type)
-    const { error } = await supabase.storage.from(PHOTO_BUCKET).upload(path, file, { contentType: file.type })
+    const { error } = await supabase.storage
+      .from(PHOTO_BUCKET)
+      .upload(path, file, { contentType: file.type })
     if (error) {
       update(key, { status: "error" })
       toast.error(`${file.name} didn't upload. Remove it and try again.`)

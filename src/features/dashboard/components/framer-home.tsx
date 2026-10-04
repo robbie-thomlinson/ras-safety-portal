@@ -37,7 +37,9 @@ export function FramerHome({
             )}
             <div className="flex flex-col gap-0.5">
               <p className="font-semibold">
-                {done ? "You've submitted today's safety form" : "Today's safety form isn't done yet"}
+                {done
+                  ? "You've submitted today's safety form"
+                  : "Today's safety form isn't done yet"}
               </p>
               <p className="text-sm text-muted-foreground">
                 {done
@@ -59,7 +61,10 @@ export function FramerHome({
         <div className="flex items-center justify-between">
           <h2 className="text-xl">Recent forms</h2>
           {recentForms.length > 0 && (
-            <Link href="/submissions" className="text-sm font-semibold text-primary hover:underline">
+            <Link
+              href="/submissions"
+              className="text-sm font-semibold text-primary hover:underline"
+            >
               View all
             </Link>
           )}
@@ -67,7 +72,11 @@ export function FramerHome({
         {recentForms.length ? (
           <SubmissionList forms={recentForms} />
         ) : (
-          <EmptyState icon={ClipboardListIcon} title="No forms yet" description="Your submitted forms will show up here." />
+          <EmptyState
+            icon={ClipboardListIcon}
+            title="No forms yet"
+            description="Your submitted forms will show up here."
+          />
         )}
       </section>
     </>

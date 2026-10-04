@@ -16,8 +16,16 @@ const FRAMERS = [
   { email: "mei.chen@ras.test", today: false },
 ]
 const CHECKLIST = [
-  "hard_hat_worn", "vest_worn", "boots_worn", "eye_protection_worn", "fall_protection_inspected",
-  "scaffolding_inspected", "ladders_inspected", "tools_inspected", "cords_inspected", "hazards_identified",
+  "hard_hat_worn",
+  "vest_worn",
+  "boots_worn",
+  "eye_protection_worn",
+  "fall_protection_inspected",
+  "scaffolding_inspected",
+  "ladders_inspected",
+  "tools_inspected",
+  "cords_inspected",
+  "hazards_identified",
 ]
 const NOTES = [
   "Wet ground by the north entrance, put down gravel.",
@@ -29,7 +37,12 @@ const NOTES = [
   "",
 ]
 
-const status = JSON.parse(execSync("npx supabase status -o json", { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }))
+const status = JSON.parse(
+  execSync("npx supabase status -o json", {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  }),
+)
 const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Vancouver" }).format(new Date())
 
 // Seeded so reruns after a reset produce the same data.
@@ -60,7 +73,8 @@ function png(r, g, b, width = 320, height = 240) {
   const rows = Buffer.alloc((width * 3 + 1) * height)
   for (let y = 0; y < height; y++) {
     const shade = y > height * 0.6 ? 0.6 : 1
-    for (let x = 0; x < width; x++) rows.set([r * shade, g * shade, b * shade], y * (width * 3 + 1) + 1 + x * 3)
+    for (let x = 0; x < width; x++)
+      rows.set([r * shade, g * shade, b * shade], y * (width * 3 + 1) + 1 + x * 3)
   }
   return Buffer.concat([
     Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
@@ -71,14 +85,19 @@ function png(r, g, b, width = 320, height = 240) {
 }
 
 async function signIn(email) {
-  const client = createClient(status.API_URL, status.PUBLISHABLE_KEY, { auth: { persistSession: false } })
+  const client = createClient(status.API_URL, status.PUBLISHABLE_KEY, {
+    auth: { persistSession: false },
+  })
   const { data, error } = await client.auth.signInWithPassword({ email, password: PASSWORD })
   if (error) throw new Error(`Couldn't sign in as ${email}: ${error.message}`)
   return { client, userId: data.user.id }
 }
 
 const { client: admin } = await signIn("admin@ras.test")
-const { data: sites, error: sitesError } = await admin.from("job_sites").select("id").is("archived_at", null)
+const { data: sites, error: sitesError } = await admin
+  .from("job_sites")
+  .select("id")
+  .is("archived_at", null)
 if (sitesError) throw sitesError
 
 let created = 0
@@ -92,7 +111,9 @@ for (const framer of FRAMERS) {
     for (let i = 0; i < 1 + Math.floor(random() * 3); i++) {
       const path = `${userId}/${crypto.randomUUID()}.png`
       const image = png(40 + random() * 60, 90 + random() * 80, 60 + random() * 50)
-      const { error } = await client.storage.from("safety-photos").upload(path, image, { contentType: "image/png" })
+      const { error } = await client.storage
+        .from("safety-photos")
+        .upload(path, image, { contentType: "image/png" })
       if (error) throw error
       photoPaths.push(path)
     }

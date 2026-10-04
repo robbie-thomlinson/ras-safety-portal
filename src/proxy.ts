@@ -19,11 +19,13 @@ export async function proxy(request: NextRequest) {
         setAll(cookiesToSet, headers) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           response = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options))
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options),
+          )
           Object.entries(headers).forEach(([key, value]) => response.headers.set(key, value))
         },
       },
-    }
+    },
   )
 
   // getClaims() verifies the JWT (and refreshes it if needed); getSession() would trust the cookie.
@@ -47,7 +49,7 @@ function redirectWithCookies(
   request: NextRequest,
   response: NextResponse,
   pathname: string,
-  params: Record<string, string> = {}
+  params: Record<string, string> = {},
 ) {
   const url = request.nextUrl.clone()
   url.pathname = pathname
@@ -58,5 +60,7 @@ function redirectWithCookies(
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon.png|brand/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|icon.png|brand/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 }

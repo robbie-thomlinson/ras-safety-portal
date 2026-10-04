@@ -10,13 +10,19 @@ import { setReviewStatus, submitSafetyForm } from "./data"
 import { reviewSchema, safetyFormSchema, type SafetyFormInput } from "./schemas"
 
 // Photos must already be uploaded to Storage; this records the form and attaches them atomically.
-export async function submitSafetyFormAction(input: SafetyFormInput): Promise<ActionResult<{ id: number }>> {
+export async function submitSafetyFormAction(
+  input: SafetyFormInput,
+): Promise<ActionResult<{ id: number }>> {
   try {
     const { user, supabase } = await requireActionUser("framer")
 
     const parsed = safetyFormSchema.safeParse(input)
     if (!parsed.success) {
-      return { ok: false, error: "Check the highlighted fields.", fieldErrors: z.flattenError(parsed.error).fieldErrors }
+      return {
+        ok: false,
+        error: "Check the highlighted fields.",
+        fieldErrors: z.flattenError(parsed.error).fieldErrors,
+      }
     }
     if (parsed.data.photoPaths.some((path) => !path.startsWith(`${user.id}/`))) {
       return { ok: false, error: "Invalid photo.", fieldErrors: { photoPaths: ["Invalid photo"] } }
@@ -30,7 +36,9 @@ export async function submitSafetyFormAction(input: SafetyFormInput): Promise<Ac
   }
 }
 
-export async function reviewSafetyFormAction(input: z.input<typeof reviewSchema>): Promise<ActionResult> {
+export async function reviewSafetyFormAction(
+  input: z.input<typeof reviewSchema>,
+): Promise<ActionResult> {
   try {
     const { supabase } = await requireActionUser("admin")
     const { formId, status } = reviewSchema.parse(input)

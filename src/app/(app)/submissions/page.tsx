@@ -52,7 +52,11 @@ export default async function SubmissionsPage({ searchParams }: PageProps<"/subm
             <Pagination result={forms} pathname={PATH} searchParams={params} />
           </>
         ) : (
-          <EmptyState icon={ClipboardListIcon} title="No forms yet" description="Submit your first safety form to see it here." />
+          <EmptyState
+            icon={ClipboardListIcon}
+            title="No forms yet"
+            description="Submit your first safety form to see it here."
+          />
         )}
       </>
     )
@@ -69,7 +73,12 @@ export default async function SubmissionsPage({ searchParams }: PageProps<"/subm
   return (
     <>
       <PageHeader title="Submissions" />
-      <SubmissionFilters filters={filters} sites={sites} workers={workers} today={todayInRasTimeZone()} />
+      <SubmissionFilters
+        filters={filters}
+        sites={sites}
+        workers={workers}
+        today={todayInRasTimeZone()}
+      />
       {forms.total ? (
         <>
           {/* The count sits on the results, where the eye lands after changing a filter. */}
@@ -80,7 +89,11 @@ export default async function SubmissionsPage({ searchParams }: PageProps<"/subm
           <Pagination result={forms} pathname={PATH} searchParams={params} />
         </>
       ) : (
-        <EmptyState icon={SearchXIcon} title="No matching forms" description="Try widening the dates or clearing a filter." />
+        <EmptyState
+          icon={SearchXIcon}
+          title="No matching forms"
+          description="Try widening the dates or clearing a filter."
+        />
       )}
     </>
   )
@@ -101,12 +114,15 @@ function ResultCount({ total, filtered }: { total: number; filtered: boolean }) 
 
 // A stale or hand-edited page number past the end goes to the last page (or the first, if nothing matches).
 function redirectPastLastPage(result: Paginated<unknown>, params: SearchParams) {
-  if (result.page > Math.max(result.pageCount, 1)) redirect(pageHref(PATH, params, result.pageCount))
+  if (result.page > Math.max(result.pageCount, 1))
+    redirect(pageHref(PATH, params, result.pageCount))
 }
 
 // A hand-edited URL with a bad filter drops that filter rather than showing an error page.
 function parseFilters(params: SearchParams): FormFilters {
-  const raw = Object.fromEntries(Object.entries(params).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v]))
+  const raw = Object.fromEntries(
+    Object.entries(params).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v]),
+  )
   const parsed = formFiltersSchema.safeParse(raw)
   if (parsed.success) return parsed.data
   for (const issue of parsed.error.issues) delete raw[String(issue.path[0])]

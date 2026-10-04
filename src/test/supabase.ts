@@ -16,7 +16,9 @@ const PASSWORD = "password123"
 
 function newClient(key: string): Client {
   const { url } = inject("supabase")
-  return createClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
+  return createClient<Database>(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
 }
 
 export function anonClient() {
@@ -25,7 +27,10 @@ export function anonClient() {
 
 export async function signIn(user: keyof typeof USERS) {
   const client = anonClient()
-  const { error } = await client.auth.signInWithPassword({ email: USERS[user].email, password: PASSWORD })
+  const { error } = await client.auth.signInWithPassword({
+    email: USERS[user].email,
+    password: PASSWORD,
+  })
   if (error) throw error
   return client
 }
@@ -38,7 +43,7 @@ export function serviceClient() {
 // A 1x1 PNG.
 const PNG = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
-  "base64"
+  "base64",
 )
 
 export async function uploadPhoto(client: Client, path: string, contentType = "image/png") {
@@ -46,7 +51,11 @@ export async function uploadPhoto(client: Client, path: string, contentType = "i
 }
 
 // Deletes what a test file created, using the service client.
-export async function cleanUp({ formIds = [], paths = [], jobSiteIds = [] }: {
+export async function cleanUp({
+  formIds = [],
+  paths = [],
+  jobSiteIds = [],
+}: {
   formIds?: number[]
   paths?: string[]
   jobSiteIds?: number[]

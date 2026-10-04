@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useTransition } from "react"
 
 import { DateRangePicker } from "@/components/date-range-picker"
+import { SearchSelect, type SearchSelectOption } from "@/components/search-select"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
@@ -22,7 +23,7 @@ export function SubmissionFilters({
   today,
 }: {
   filters: FormFilters
-  sites: Option[]
+  sites: { id: number; name: string; archivedAt: string | null }[]
   workers: Option[]
   today: string
 }) {
@@ -38,6 +39,10 @@ export function SubmissionFilters({
   }
 
   const active = Object.values(filters).some(Boolean)
+  // Active sites first, then archived ones (still searchable for their past forms), each alphabetical.
+  const siteOptions: SearchSelectOption[] = [...sites]
+    .sort((a, b) => Number(!!a.archivedAt) - Number(!!b.archivedAt))
+    .map((site) => ({ id: site.id, name: site.name, tag: site.archivedAt ? "Archived" : undefined }))
 
   return (
     <section
@@ -73,22 +78,28 @@ export function SubmissionFilters({
             className="w-full"
           />
         </Field>
-        <FilterSelect
-          id="filter-site"
-          label="Job site"
-          allLabel="All sites"
-          value={filters.jobSiteId}
-          options={sites}
-          onChange={(jobSiteId) => update({ jobSiteId })}
-        />
-        <FilterSelect
-          id="filter-worker"
-          label="Worker"
-          allLabel="All workers"
-          value={filters.workerId}
-          options={workers}
-          onChange={(workerId) => update({ workerId })}
-        />
+        <Field>
+          <FieldLabel htmlFor="filter-site">Job site</FieldLabel>
+          <SearchSelect
+            id="filter-site"
+            placeholder="All sites"
+            value={filters.jobSiteId}
+            options={siteOptions}
+            onChange={(jobSiteId) => update({ jobSiteId })}
+            className="w-full"
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="filter-worker">Worker</FieldLabel>
+          <SearchSelect
+            id="filter-worker"
+            placeholder="All workers"
+            value={filters.workerId}
+            options={workers}
+            onChange={(workerId) => update({ workerId })}
+            className="w-full"
+          />
+        </Field>
         <FilterSelect
           id="filter-status"
           label="Status"

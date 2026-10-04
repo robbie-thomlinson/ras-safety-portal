@@ -15,9 +15,9 @@ export default async function HomePage() {
     return <AdminDashboard summary={await getDashboardSummary(supabase, today)} />
   }
 
-  const [recentForms, todaysForms] = await Promise.all([
-    listSafetyForms(supabase, {}, { limit: 5 }),
+  const [recent, todays] = await Promise.all([
+    listSafetyForms(supabase, {}, { pageSize: 5 }),
     listSafetyForms(supabase, { from: today, to: today }),
   ])
-  return <FarmerHome user={user} today={today} todaysForms={todaysForms} recentForms={recentForms} />
+  return <FarmerHome user={user} today={today} todaysForms={todays.items} recentForms={recent.items} />
 }

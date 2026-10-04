@@ -27,8 +27,8 @@ export function dateRange(from: string, to: string) {
 
 // The calendar component works in local Date objects; the app passes YYYY-MM-DD strings around.
 export function toCalendarDate(date: string) {
-  const [y, m, d] = date.split("-").map(Number)
-  return new Date(y, m - 1, d)
+  // A date-time without an offset parses as local time.
+  return new Date(`${date}T00:00:00`)
 }
 
 export function fromCalendarDate(date: Date) {

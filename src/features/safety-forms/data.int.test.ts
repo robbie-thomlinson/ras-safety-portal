@@ -93,7 +93,7 @@ describe("submitting", () => {
     })
     expect(form?.photos).toHaveLength(2)
 
-    const response = await fetch(form!.photos[0].url!)
+    const response = await fetch(form!.photos[0]!.url!)
     expect(response.status).toBe(200)
     expect(response.headers.get("content-type")).toBe("image/png")
   })
@@ -112,7 +112,7 @@ describe("submitting", () => {
         .select("path")
         .eq("safety_form_id", framerFormId)
     ).data!
-    await expect(submit(framer, { photoPaths: [attached.path] })).rejects.toThrow(
+    await expect(submit(framer, { photoPaths: [attached!.path] })).rejects.toThrow(
       "already attached to another form",
     )
   })
@@ -168,11 +168,11 @@ describe("photo storage", () => {
         .select("path")
         .eq("safety_form_id", framerFormId)
     ).data!
-    const { data } = await framer.storage.from(PHOTO_BUCKET).remove([attached.path])
+    const { data } = await framer.storage.from(PHOTO_BUCKET).remove([attached!.path])
     expect(data ?? []).toHaveLength(0)
 
     const form = await getSafetyForm(admin, framerFormId)
-    expect((await fetch(form!.photos[0].url!)).status).toBe(200)
+    expect((await fetch(form!.photos[0]!.url!)).status).toBe(200)
   })
 })
 

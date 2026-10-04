@@ -22,9 +22,9 @@ export default function setup(project: TestProject) {
     throw new Error("Local Supabase isn't running. Start it with `npm run db:start`.")
   }
 
-  project.provide("supabase", {
-    url: status.API_URL,
-    publishableKey: status.PUBLISHABLE_KEY,
-    secretKey: status.SECRET_KEY,
-  })
+  const { API_URL: url, PUBLISHABLE_KEY: publishableKey, SECRET_KEY: secretKey } = status
+  if (!url || !publishableKey || !secretKey) {
+    throw new Error("`supabase status` didn't report the API URL and keys.")
+  }
+  project.provide("supabase", { url, publishableKey, secretKey })
 }

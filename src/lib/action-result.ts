@@ -4,7 +4,7 @@ export type ActionResult<T = undefined> =
 
 // Known, expected failures whose message is safe to show the user.
 export class UserFacingError extends Error {
-  name = "UserFacingError"
+  override name = "UserFacingError"
 }
 
 export const GENERIC_ERROR = "Something went wrong. Please try again."

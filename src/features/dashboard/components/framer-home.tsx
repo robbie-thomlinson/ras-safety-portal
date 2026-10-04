@@ -10,7 +10,7 @@ import type { SafetyFormListItem } from "@/features/safety-forms/data"
 import { SubmissionList } from "@/features/safety-forms/components/submission-list"
 import { formatDate } from "@/lib/dates"
 
-export function FarmerHome({
+export function FramerHome({
   user,
   today,
   todaysForms,

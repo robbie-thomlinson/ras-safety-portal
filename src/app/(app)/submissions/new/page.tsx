@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/server"
 export const metadata: Metadata = { title: "New safety form" }
 
 export default async function NewSubmissionPage() {
-  const user = await requirePageUser("farmer")
+  const user = await requirePageUser("framer")
   const sites = await listJobSites(await createClient())
 
   return (

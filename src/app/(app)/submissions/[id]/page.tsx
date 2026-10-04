@@ -20,7 +20,7 @@ export default async function SubmissionPage({ params }: PageProps<"/submissions
 
   const formId = Number(id)
   if (!Number.isSafeInteger(formId) || formId <= 0) notFound()
-  // RLS returns nothing for another farmer's form, so it 404s like a missing one.
+  // RLS returns nothing for another framer's form, so it 404s like a missing one.
   const form = await getSafetyForm(await createClient(), formId)
   if (!form) notFound()
 

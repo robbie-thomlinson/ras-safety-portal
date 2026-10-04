@@ -5,7 +5,7 @@ import type { Client } from "@/lib/supabase/types"
 
 import type { JobSiteValues } from "./schemas"
 
-// Archived sites are hidden from the farmer's dropdown but kept for past forms.
+// Archived sites are hidden from the framer's dropdown but kept for past forms.
 export async function listJobSites(supabase: Client, { includeArchived = false } = {}) {
   let query = supabase.from("job_sites").select("id, name, address, archived_at").order("name")
   if (!includeArchived) query = query.is("archived_at", null)

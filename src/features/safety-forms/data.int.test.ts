@@ -7,8 +7,8 @@ import { getSafetyForm, listSafetyForms, listWorkers, setReviewStatus, submitSaf
 import { PHOTO_BUCKET, photoPath } from "./photos"
 import type { FormFilters, SafetyFormValues } from "./schemas"
 
-let farmer: Client
-let otherFarmer: Client
+let framer: Client
+let otherFramer: Client
 let admin: Client
 const formIds: number[] = []
 const paths: string[] = []
@@ -40,21 +40,21 @@ async function submit(client: Client, values: Partial<SafetyFormValues> & Pick<S
   return id
 }
 
-let farmerFormId: number
+let framerFormId: number
 let otherFormId: number
 
 beforeAll(async () => {
-  ;[farmer, otherFarmer, admin] = await Promise.all([signIn("farmer"), signIn("otherFarmer"), signIn("admin")])
+  ;[framer, otherFramer, admin] = await Promise.all([signIn("framer"), signIn("otherFramer"), signIn("admin")])
 
-  farmerFormId = await submit(farmer, {
+  framerFormId = await submit(framer, {
     jobSiteId: 2,
     date: "2026-09-14",
-    photoPaths: [await upload(farmer, USERS.farmer.id), await upload(farmer, USERS.farmer.id)],
+    photoPaths: [await upload(framer, USERS.framer.id), await upload(framer, USERS.framer.id)],
   })
-  otherFormId = await submit(otherFarmer, {
+  otherFormId = await submit(otherFramer, {
     jobSiteId: 3,
     date: "2026-09-16",
-    photoPaths: [await upload(otherFarmer, USERS.otherFarmer.id)],
+    photoPaths: [await upload(otherFramer, USERS.otherFramer.id)],
   })
 })
 
@@ -62,12 +62,12 @@ afterAll(() => cleanUp({ formIds, paths }))
 
 describe("submitting", () => {
   it("records the form with its photos and viewable links", async () => {
-    const form = await getSafetyForm(farmer, farmerFormId)
+    const form = await getSafetyForm(framer, framerFormId)
     expect(form).toMatchObject({
       date: "2026-09-14",
       status: "submitted",
       jobSite: { id: 2 },
-      worker: { id: USERS.farmer.id, name: "Frank Farmer" },
+      worker: { id: USERS.framer.id, name: "Frank Framer" },
       checklist,
       notes: "Test",
       review: null,
@@ -79,15 +79,15 @@ describe("submitting", () => {
     expect(response.headers.get("content-type")).toBe("image/png")
   })
 
-  it("rejects another farmer's photo", async () => {
-    const theirs = await upload(otherFarmer, USERS.otherFarmer.id)
-    await expect(submit(farmer, { photoPaths: [theirs] })).rejects.toThrow("Some photos didn't finish uploading")
+  it("rejects another framer's photo", async () => {
+    const theirs = await upload(otherFramer, USERS.otherFramer.id)
+    await expect(submit(framer, { photoPaths: [theirs] })).rejects.toThrow("Some photos didn't finish uploading")
   })
 
   it("rejects a photo that's already on another form", async () => {
-    const [attached] = (await serviceClient().from("safety_form_photos").select("path").eq("safety_form_id", farmerFormId))
+    const [attached] = (await serviceClient().from("safety_form_photos").select("path").eq("safety_form_id", framerFormId))
       .data!
-    await expect(submit(farmer, { photoPaths: [attached.path] })).rejects.toThrow("already attached to another form")
+    await expect(submit(framer, { photoPaths: [attached.path] })).rejects.toThrow("already attached to another form")
   })
 
   it("rejects an archived job site", async () => {
@@ -98,43 +98,43 @@ describe("submitting", () => {
       .select("id")
       .single()
     try {
-      const photo = await upload(farmer, USERS.farmer.id)
-      await expect(submit(farmer, { jobSiteId: site!.id, photoPaths: [photo] })).rejects.toThrow("job site isn't available")
+      const photo = await upload(framer, USERS.framer.id)
+      await expect(submit(framer, { jobSiteId: site!.id, photoPaths: [photo] })).rejects.toThrow("job site isn't available")
     } finally {
       await service.from("job_sites").delete().eq("id", site!.id)
     }
   })
 
   it("doesn't let an admin submit", async () => {
-    const photo = await upload(farmer, USERS.farmer.id)
-    await expect(submit(admin, { photoPaths: [photo] })).rejects.toThrow("Only farmers can submit")
+    const photo = await upload(framer, USERS.framer.id)
+    await expect(submit(admin, { photoPaths: [photo] })).rejects.toThrow("Only framers can submit")
   })
 })
 
 describe("photo storage", () => {
-  it("doesn't let a farmer upload into someone else's folder", async () => {
-    const { error } = await uploadPhoto(farmer, photoPath(USERS.otherFarmer.id, "image/png"))
+  it("doesn't let a framer upload into someone else's folder", async () => {
+    const { error } = await uploadPhoto(framer, photoPath(USERS.otherFramer.id, "image/png"))
     expect(error).not.toBeNull()
   })
 
   it("rejects files that aren't images", async () => {
-    const { error } = await uploadPhoto(farmer, `${USERS.farmer.id}/${crypto.randomUUID()}.png`, "text/html")
+    const { error } = await uploadPhoto(framer, `${USERS.framer.id}/${crypto.randomUUID()}.png`, "text/html")
     expect(error).not.toBeNull()
   })
 
-  it("lets a farmer delete a photo they haven't submitted yet", async () => {
-    const path = await upload(farmer, USERS.farmer.id)
-    const { data } = await farmer.storage.from(PHOTO_BUCKET).remove([path])
+  it("lets a framer delete a photo they haven't submitted yet", async () => {
+    const path = await upload(framer, USERS.framer.id)
+    const { data } = await framer.storage.from(PHOTO_BUCKET).remove([path])
     expect(data).toHaveLength(1)
   })
 
-  it("doesn't let a farmer delete a submitted photo", async () => {
-    const [attached] = (await serviceClient().from("safety_form_photos").select("path").eq("safety_form_id", farmerFormId))
+  it("doesn't let a framer delete a submitted photo", async () => {
+    const [attached] = (await serviceClient().from("safety_form_photos").select("path").eq("safety_form_id", framerFormId))
       .data!
-    const { data } = await farmer.storage.from(PHOTO_BUCKET).remove([attached.path])
+    const { data } = await framer.storage.from(PHOTO_BUCKET).remove([attached.path])
     expect(data ?? []).toHaveLength(0)
 
-    const form = await getSafetyForm(admin, farmerFormId)
+    const form = await getSafetyForm(admin, framerFormId)
     expect((await fetch(form!.photos[0].url!)).status).toBe(200)
   })
 })
@@ -144,28 +144,28 @@ const everything = async (client: Client, filters: FormFilters = {}) =>
   (await listSafetyForms(client, filters, { pageSize: 1000 })).items
 
 describe("reading", () => {
-  it("shows a farmer only their own forms", async () => {
-    const forms = await everything(farmer)
-    expect(forms.map((f) => f.id)).toContain(farmerFormId)
-    expect(forms.every((f) => f.worker.id === USERS.farmer.id)).toBe(true)
+  it("shows a framer only their own forms", async () => {
+    const forms = await everything(framer)
+    expect(forms.map((f) => f.id)).toContain(framerFormId)
+    expect(forms.every((f) => f.worker.id === USERS.framer.id)).toBe(true)
   })
 
-  it("hides another farmer's form", async () => {
-    expect(await getSafetyForm(farmer, otherFormId)).toBeNull()
+  it("hides another framer's form", async () => {
+    expect(await getSafetyForm(framer, otherFormId)).toBeNull()
   })
 
-  it("shows an admin every farmer's forms", async () => {
+  it("shows an admin every framer's forms", async () => {
     const ids = (await everything(admin)).map((f) => f.id)
-    expect(ids).toEqual(expect.arrayContaining([farmerFormId, otherFormId]))
+    expect(ids).toEqual(expect.arrayContaining([framerFormId, otherFormId]))
   })
 
   it("filters by worker, site and date range", async () => {
-    const byWorker = await everything(admin, { workerId: USERS.otherFarmer.id })
+    const byWorker = await everything(admin, { workerId: USERS.otherFramer.id })
     expect(byWorker.map((f) => f.id)).toContain(otherFormId)
-    expect(byWorker.every((f) => f.worker.id === USERS.otherFarmer.id)).toBe(true)
+    expect(byWorker.every((f) => f.worker.id === USERS.otherFramer.id)).toBe(true)
 
     const bySite = await everything(admin, { jobSiteId: 2 })
-    expect(bySite.map((f) => f.id)).toContain(farmerFormId)
+    expect(bySite.map((f) => f.id)).toContain(framerFormId)
     expect(bySite.every((f) => f.jobSite.id === 2)).toBe(true)
 
     const byDate = await everything(admin, { from: "2026-09-16", to: "2026-09-16" })
@@ -176,9 +176,9 @@ describe("reading", () => {
     expect(awaiting.every((f) => f.status === "submitted")).toBe(true)
   })
 
-  it("lists farmers (not admins) for the worker filter", async () => {
+  it("lists framers (not admins) for the worker filter", async () => {
     const workers = await listWorkers(admin)
-    expect(workers.map((w) => w.id)).toContain(USERS.farmer.id)
+    expect(workers.map((w) => w.id)).toContain(USERS.framer.id)
     expect(workers.map((w) => w.id)).not.toContain(USERS.admin.id)
   })
 })
@@ -192,7 +192,7 @@ describe("paging", () => {
   })
 
   it("counts only the filtered forms", async () => {
-    const filters = { workerId: USERS.otherFarmer.id }
+    const filters = { workerId: USERS.otherFramer.id }
     const page = await listSafetyForms(admin, filters, { pageSize: 1 })
     expect(page.total).toBe((await everything(admin, filters)).length)
   })
@@ -212,13 +212,13 @@ describe("reviewing", () => {
     expect(form?.review?.reviewerName).toBe("Alex Admin")
   })
 
-  it("shows the farmer it was reviewed, without the reviewer's profile", async () => {
-    const form = await getSafetyForm(otherFarmer, otherFormId)
+  it("shows the framer it was reviewed, without the reviewer's profile", async () => {
+    const form = await getSafetyForm(otherFramer, otherFormId)
     expect(form?.status).toBe("reviewed")
     expect(form?.review).toMatchObject({ reviewerName: null })
   })
 
-  it("doesn't let a farmer review a form", async () => {
-    await expect(setReviewStatus(farmer, farmerFormId, "reviewed")).rejects.toThrow("Safety form not found.")
+  it("doesn't let a framer review a form", async () => {
+    await expect(setReviewStatus(framer, framerFormId, "reviewed")).rejects.toThrow("Safety form not found.")
   })
 })

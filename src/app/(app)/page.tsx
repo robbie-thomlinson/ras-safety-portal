@@ -1,6 +1,6 @@
 import { requirePageUser } from "@/features/auth/dal"
 import { AdminDashboard } from "@/features/dashboard/components/admin-dashboard"
-import { FarmerHome } from "@/features/dashboard/components/farmer-home"
+import { FramerHome } from "@/features/dashboard/components/framer-home"
 import { getDashboardSummary } from "@/features/dashboard/data"
 import { listSafetyForms } from "@/features/safety-forms/data"
 import { todayInRasTimeZone } from "@/lib/dates"
@@ -19,5 +19,5 @@ export default async function HomePage() {
     listSafetyForms(supabase, {}, { pageSize: 5 }),
     listSafetyForms(supabase, { from: today, to: today }),
   ])
-  return <FarmerHome user={user} today={today} todaysForms={todays.items} recentForms={recent.items} />
+  return <FramerHome user={user} today={today} todaysForms={todays.items} recentForms={recent.items} />
 }

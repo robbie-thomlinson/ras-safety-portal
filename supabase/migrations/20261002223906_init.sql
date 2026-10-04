@@ -2,7 +2,7 @@
 
 -- ---------- Types ----------
 
-create type public.user_role as enum ('farmer', 'admin');
+create type public.user_role as enum ('framer', 'admin');
 create type public.form_status as enum ('submitted', 'reviewed');
 
 -- ---------- Tables ----------
@@ -10,7 +10,7 @@ create type public.form_status as enum ('submitted', 'reviewed');
 -- One row per auth user. Created by the on_auth_user_created trigger below.
 create table public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
-  role public.user_role not null default 'farmer',
+  role public.user_role not null default 'framer',
   first_name text not null,
   last_name text not null,
   created_at timestamptz not null default now()
@@ -80,7 +80,7 @@ as $$
   );
 $$;
 
--- Role comes from app_metadata, which users can't set themselves, so sign-ups are always farmers.
+-- Role comes from app_metadata, which users can't set themselves, so sign-ups are always framers.
 create function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -91,7 +91,7 @@ begin
   insert into public.profiles (id, role, first_name, last_name)
   values (
     new.id,
-    coalesce((new.raw_app_meta_data ->> 'role')::public.user_role, 'farmer'),
+    coalesce((new.raw_app_meta_data ->> 'role')::public.user_role, 'framer'),
     coalesce(new.raw_user_meta_data ->> 'first_name', ''),
     coalesce(new.raw_user_meta_data ->> 'last_name', '')
   );
@@ -118,18 +118,18 @@ create policy "Signed-in users see all job sites"
   on public.job_sites for select to authenticated
   using (true);
 
-create policy "Farmers see their own forms; admins see all"
+create policy "Framers see their own forms; admins see all"
   on public.safety_forms for select to authenticated
   using (worker_id = (select auth.uid()) or public.is_admin());
 
-create policy "Farmers submit forms for themselves"
+create policy "Framers submit forms for themselves"
   on public.safety_forms for insert to authenticated
   with check (
     worker_id = (select auth.uid())
     and not public.is_admin()
   );
 
--- Farmers may only fill in the form itself; status, review and timestamp columns keep their defaults.
+-- Framers may only fill in the form itself; status, review and timestamp columns keep their defaults.
 revoke insert on public.safety_forms from authenticated;
 grant insert (
   worker_id, job_site_id, date,
@@ -144,7 +144,7 @@ create policy "Admins review forms"
   using (public.is_admin())
   with check (public.is_admin());
 
--- Admins may only change the review columns, not what the farmer submitted.
+-- Admins may only change the review columns, not what the framer submitted.
 revoke update on public.safety_forms from authenticated;
 grant update (status, reviewed_by, reviewed_at) on public.safety_forms to authenticated;
 
@@ -153,7 +153,7 @@ create policy "Photos are visible with their form"
   on public.safety_form_photos for select to authenticated
   using (exists (select 1 from public.safety_forms f where f.id = safety_form_id));
 
-create policy "Farmers attach photos to their own forms"
+create policy "Framers attach photos to their own forms"
   on public.safety_form_photos for insert to authenticated
   with check (
     exists (
@@ -178,14 +178,14 @@ values (
   array['image/jpeg', 'image/png', 'image/webp', 'image/heic']
 );
 
-create policy "Farmers upload photos to their own folder"
+create policy "Framers upload photos to their own folder"
   on storage.objects for insert to authenticated
   with check (
     bucket_id = 'safety-photos'
     and (storage.foldername(name))[1] = (select auth.uid())::text
   );
 
-create policy "Farmers read their own photos; admins read all"
+create policy "Framers read their own photos; admins read all"
   on storage.objects for select to authenticated
   using (
     bucket_id = 'safety-photos'

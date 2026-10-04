@@ -15,16 +15,16 @@ const formIds: number[] = []
 const paths: string[] = []
 
 beforeAll(async () => {
-  const farmer = await signIn("farmer")
+  const framer = await signIn("framer")
   admin = await signIn("admin")
 
-  const path = photoPath(USERS.farmer.id, "image/png")
-  const { error } = await uploadPhoto(farmer, path)
+  const path = photoPath(USERS.framer.id, "image/png")
+  const { error } = await uploadPhoto(framer, path)
   if (error) throw error
   paths.push(path)
 
   formIds.push(
-    await submitSafetyForm(farmer, {
+    await submitSafetyForm(framer, {
       jobSiteId: 1,
       date: TODAY,
       hardHatWorn: false,
@@ -50,9 +50,9 @@ describe("getDashboardSummary", () => {
 
     expect(summary.totals.submittedToday).toBe(1)
     expect(summary.totals.formsWithIssues).toBe(1)
-    expect(summary.notSubmittedToday.map((w) => w.id)).not.toContain(USERS.farmer.id)
-    expect(summary.notSubmittedToday.map((w) => w.id)).toContain(USERS.otherFarmer.id)
-    expect(summary.perSite.find((s) => s.site === "Saanichton Dairy Barn")?.count).toBe(1)
+    expect(summary.notSubmittedToday.map((w) => w.id)).not.toContain(USERS.framer.id)
+    expect(summary.notSubmittedToday.map((w) => w.id)).toContain(USERS.otherFramer.id)
+    expect(summary.perSite.find((s) => s.site === "Mount Newton Townhomes")?.count).toBe(1)
     expect(summary.missedItems).toEqual([{ item: "Hard hat worn", count: 1 }])
   })
 })

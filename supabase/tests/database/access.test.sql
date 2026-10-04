@@ -1,5 +1,5 @@
 -- RLS, grants and submit_safety_form, checked as each role. Run with `npm run test:db`.
--- Uses the seeded users: Frank (farmer), Priya (farmer), Alex (admin).
+-- Uses the seeded users: Frank (framer), Priya (framer), Alex (admin).
 
 begin;
 create extension if not exists pgtap with schema extensions;
@@ -62,7 +62,7 @@ select throws_ok(
 
 reset role;
 
--- ---------- Farmer ----------
+-- ---------- Framer ----------
 
 select tests.login('11111111-1111-1111-1111-111111111111');
 set local role authenticated;
@@ -79,7 +79,7 @@ select throws_like(
 );
 select throws_like(
   $$ select tests.submit(1, current_date - 1, array['33333333-3333-3333-3333-333333333333/bbbbbbbb-0000-0000-0000-000000000001.jpg']) $$,
-  'invalid_photos', 'cannot submit another farmer''s photo'
+  'invalid_photos', 'cannot submit another framer''s photo'
 );
 select throws_like(
   $$ select tests.submit(1, current_date - 1, array['11111111-1111-1111-1111-111111111111/cccccccc-0000-0000-0000-000000000009.jpg']) $$,
@@ -100,7 +100,7 @@ select lives_ok(
   $$ select tests.submit(2, current_date - 1, array[
        '11111111-1111-1111-1111-111111111111/aaaaaaaa-0000-0000-0000-000000000001.jpg',
        '11111111-1111-1111-1111-111111111111/aaaaaaaa-0000-0000-0000-000000000002.png']) $$,
-  'farmer submits a form with two photos'
+  'framer submits a form with two photos'
 );
 
 select results_eq(
@@ -122,18 +122,18 @@ select throws_ok(
 
 select is(
   (select count(*) from public.safety_forms where worker_id <> '11111111-1111-1111-1111-111111111111'),
-  0::bigint, 'farmer sees only their own forms'
+  0::bigint, 'framer sees only their own forms'
 );
 select is(
   (select count(*) from public.safety_form_photos where path like '3333%'),
-  0::bigint, 'farmer cannot see another farmer''s photo rows'
+  0::bigint, 'framer cannot see another framer''s photo rows'
 );
 select is(
   (select count(*) from storage.objects where name like '3333%'),
-  0::bigint, 'farmer cannot see another farmer''s stored photos'
+  0::bigint, 'framer cannot see another framer''s stored photos'
 );
 select is(
-  (select count(*) from public.profiles), 1::bigint, 'farmer sees only their own profile'
+  (select count(*) from public.profiles), 1::bigint, 'framer sees only their own profile'
 );
 
 select throws_ok(
@@ -142,25 +142,25 @@ select throws_ok(
        tools_inspected, cords_inspected, hazards_identified)
      values ('11111111-1111-1111-1111-111111111111', 1, current_date,
        true, true, true, true, true, true, true, true, true, true) $$,
-  '42501', null, 'farmer cannot insert a form directly (bypassing the photo check)'
+  '42501', null, 'framer cannot insert a form directly (bypassing the photo check)'
 );
 select throws_ok(
   $$ insert into public.safety_form_photos (safety_form_id, path, content_type, size_bytes)
      select id, '11111111-1111-1111-1111-111111111111/x.jpg', 'image/jpeg', 1 from public.safety_forms limit 1 $$,
-  '42501', null, 'farmer cannot attach photos directly'
+  '42501', null, 'framer cannot attach photos directly'
 );
 update public.safety_forms set status = 'reviewed';
 select is(
   (select count(*) from public.safety_forms where status = 'reviewed'),
-  0::bigint, 'farmer cannot review their own form'
+  0::bigint, 'framer cannot review their own form'
 );
 select throws_ok(
   $$ update public.safety_forms set hard_hat_worn = false $$,
-  '42501', null, 'farmer cannot edit a submitted form'
+  '42501', null, 'framer cannot edit a submitted form'
 );
 select throws_ok(
   $$ insert into public.job_sites (name, address) values ('Sneaky', '1 Road') $$,
-  '42501', null, 'farmer cannot add job sites'
+  '42501', null, 'framer cannot add job sites'
 );
 
 reset role;
@@ -170,12 +170,12 @@ reset role;
 select tests.login('22222222-2222-2222-2222-222222222222');
 set local role authenticated;
 
-select is((select count(*) from public.safety_forms), 2::bigint, 'admin sees every farmer''s forms');
+select is((select count(*) from public.safety_forms), 2::bigint, 'admin sees every framer''s forms');
 select is((select count(*) from public.safety_form_photos), 3::bigint, 'admin sees every photo row');
 
 select throws_like(
   $$ select tests.submit(1, current_date - 1, array['11111111-1111-1111-1111-111111111111/aaaaaaaa-0000-0000-0000-000000000001.jpg']) $$,
-  'farmers_only', 'admin cannot submit forms'
+  'framers_only', 'admin cannot submit forms'
 );
 
 update public.safety_forms set status = 'reviewed' where job_site_id = 2;
@@ -190,7 +190,7 @@ select throws_ok(
 );
 select throws_ok(
   $$ update public.safety_forms set notes = 'edited' $$,
-  '42501', null, 'admin cannot change what the farmer submitted'
+  '42501', null, 'admin cannot change what the framer submitted'
 );
 
 update public.safety_forms set status = 'submitted' where job_site_id = 2;
@@ -201,12 +201,12 @@ select results_eq(
 );
 
 select lives_ok(
-  $$ insert into public.job_sites (name, address) values ('New Barn', '9 Farm Rd');
-     update public.job_sites set archived_at = now() where name = 'New Barn' $$,
+  $$ insert into public.job_sites (name, address) values ('New Duplex', '9 Test Rd');
+     update public.job_sites set archived_at = now() where name = 'New Duplex' $$,
   'admin can add and archive job sites'
 );
 select throws_ok(
-  $$ delete from public.job_sites where name = 'New Barn' $$,
+  $$ delete from public.job_sites where name = 'New Duplex' $$,
   '42501', null, 'admin cannot hard-delete job sites'
 );
 

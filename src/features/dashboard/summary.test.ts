@@ -11,14 +11,14 @@ function form(date: string, workerId: string, jobSiteId: number, no: ChecklistIt
 }
 
 const workers = [
-  { id: "frank", name: "Frank Farmer" },
+  { id: "frank", name: "Frank Framer" },
   { id: "priya", name: "Priya Sandhu" },
   { id: "tom", name: "Tom Bergstrom" },
 ]
 
 const sites = [
-  { id: 1, name: "Dairy Barn", archivedAt: null },
-  { id: 2, name: "Hay Barn", archivedAt: null },
+  { id: 1, name: "Mount Newton Townhomes", archivedAt: null },
+  { id: 2, name: "Happy Valley Residence", archivedAt: null },
   { id: 3, name: "Old Yard", archivedAt: "2026-09-01T00:00:00Z" },
 ]
 
@@ -51,8 +51,8 @@ describe("summarize", () => {
 
   it("counts forms per site, hiding archived sites with none", () => {
     expect(summary.perSite).toEqual([
-      { site: "Dairy Barn", count: 2 },
-      { site: "Hay Barn", count: 1 },
+      { site: "Mount Newton Townhomes", count: 2 },
+      { site: "Happy Valley Residence", count: 1 },
     ])
   })
 

@@ -5,7 +5,7 @@ import { cleanUp, serviceClient, signIn, uploadPhoto, USERS } from "@/test/supab
 
 import { getSafetyForm, listSafetyForms, listWorkers, setReviewStatus, submitSafetyForm } from "./data"
 import { PHOTO_BUCKET, photoPath } from "./photos"
-import type { SafetyFormValues } from "./schemas"
+import type { FormFilters, SafetyFormValues } from "./schemas"
 
 let farmer: Client
 let otherFarmer: Client
@@ -139,9 +139,13 @@ describe("photo storage", () => {
   })
 })
 
+// Big enough that the test forms land on the first page whatever else is in the local database.
+const everything = async (client: Client, filters: FormFilters = {}) =>
+  (await listSafetyForms(client, filters, { pageSize: 1000 })).items
+
 describe("reading", () => {
   it("shows a farmer only their own forms", async () => {
-    const forms = await listSafetyForms(farmer)
+    const forms = await everything(farmer)
     expect(forms.map((f) => f.id)).toContain(farmerFormId)
     expect(forms.every((f) => f.worker.id === USERS.farmer.id)).toBe(true)
   })
@@ -151,24 +155,24 @@ describe("reading", () => {
   })
 
   it("shows an admin every farmer's forms", async () => {
-    const ids = (await listSafetyForms(admin)).map((f) => f.id)
+    const ids = (await everything(admin)).map((f) => f.id)
     expect(ids).toEqual(expect.arrayContaining([farmerFormId, otherFormId]))
   })
 
   it("filters by worker, site and date range", async () => {
-    const byWorker = await listSafetyForms(admin, { workerId: USERS.otherFarmer.id })
+    const byWorker = await everything(admin, { workerId: USERS.otherFarmer.id })
     expect(byWorker.map((f) => f.id)).toContain(otherFormId)
     expect(byWorker.every((f) => f.worker.id === USERS.otherFarmer.id)).toBe(true)
 
-    const bySite = await listSafetyForms(admin, { jobSiteId: 2 })
+    const bySite = await everything(admin, { jobSiteId: 2 })
     expect(bySite.map((f) => f.id)).toContain(farmerFormId)
     expect(bySite.every((f) => f.jobSite.id === 2)).toBe(true)
 
-    const byDate = await listSafetyForms(admin, { from: "2026-09-16", to: "2026-09-16" })
+    const byDate = await everything(admin, { from: "2026-09-16", to: "2026-09-16" })
     expect(byDate.map((f) => f.id)).toContain(otherFormId)
     expect(byDate.every((f) => f.date === "2026-09-16")).toBe(true)
 
-    const awaiting = await listSafetyForms(admin, { status: "submitted" })
+    const awaiting = await everything(admin, { status: "submitted" })
     expect(awaiting.every((f) => f.status === "submitted")).toBe(true)
   })
 
@@ -176,6 +180,27 @@ describe("reading", () => {
     const workers = await listWorkers(admin)
     expect(workers.map((w) => w.id)).toContain(USERS.farmer.id)
     expect(workers.map((w) => w.id)).not.toContain(USERS.admin.id)
+  })
+})
+
+describe("paging", () => {
+  it("returns one slice of the full list, with the total", async () => {
+    const all = await everything(admin)
+    const page = await listSafetyForms(admin, {}, { page: 2, pageSize: 2 })
+    expect(page.items.map((f) => f.id)).toEqual(all.slice(2, 4).map((f) => f.id))
+    expect(page).toMatchObject({ page: 2, pageSize: 2, total: all.length, pageCount: Math.ceil(all.length / 2) })
+  })
+
+  it("counts only the filtered forms", async () => {
+    const filters = { workerId: USERS.otherFarmer.id }
+    const page = await listSafetyForms(admin, filters, { pageSize: 1 })
+    expect(page.total).toBe((await everything(admin, filters)).length)
+  })
+
+  it("returns a page past the end empty, with the real total", async () => {
+    const page = await listSafetyForms(admin, {}, { page: 10_000 })
+    expect(page.items).toEqual([])
+    expect(page.total).toBe((await everything(admin)).length)
   })
 })
 

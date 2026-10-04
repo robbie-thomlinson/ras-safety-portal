@@ -1,6 +1,7 @@
 import "server-only"
 
 import { UserFacingError } from "@/lib/action-result"
+import { DEFAULT_PAGE_SIZE, pageRange, paginated, type PageRequest } from "@/lib/pagination"
 import type { Tables } from "@/lib/supabase/database.types"
 import type { Client } from "@/lib/supabase/types"
 
@@ -60,24 +61,38 @@ const LIST_COLUMNS = `
 `
 
 // RLS limits farmers to their own forms, so the same query serves both dashboards.
-export async function listSafetyForms(supabase: Client, filters: FormFilters = {}, { limit }: { limit?: number } = {}) {
-  let query = supabase
-    .from("safety_forms")
-    .select(LIST_COLUMNS)
-    .order("date", { ascending: false })
-    .order("created_at", { ascending: false })
-
+// An exact count is cheap at tens of thousands of rows, and gives the "of N" and last page.
+function selectForms(supabase: Client, filters: FormFilters, { head = false } = {}) {
+  let query = supabase.from("safety_forms").select(LIST_COLUMNS, { count: "exact", head })
   if (filters.jobSiteId) query = query.eq("job_site_id", filters.jobSiteId)
   if (filters.workerId) query = query.eq("worker_id", filters.workerId)
   if (filters.from) query = query.gte("date", filters.from)
   if (filters.to) query = query.lte("date", filters.to)
   if (filters.status) query = query.eq("status", filters.status)
-  if (limit) query = query.limit(limit)
+  return query
+}
 
-  const { data, error } = await query
+export async function listSafetyForms(
+  supabase: Client,
+  filters: FormFilters = {},
+  { page = 1, pageSize = DEFAULT_PAGE_SIZE }: Partial<PageRequest> = {}
+) {
+  // id breaks ties so no form is repeated or skipped between pages.
+  const { data, count, error } = await selectForms(supabase, filters)
+    .order("date", { ascending: false })
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
+    .range(...pageRange({ page, pageSize }))
+
+  // PostgREST refuses a page past the end; return it empty with the real total so the caller can redirect.
+  if (error?.code === "PGRST103") {
+    const { count, error } = await selectForms(supabase, filters, { head: true })
+    if (error) throw error
+    return paginated([], count ?? 0, { page, pageSize })
+  }
   if (error) throw error
 
-  return data.map((form) => ({
+  const items = data.map((form) => ({
     id: form.id,
     date: form.date,
     status: form.status,
@@ -88,9 +103,10 @@ export async function listSafetyForms(supabase: Client, filters: FormFilters = {
       name: `${form.worker.first_name} ${form.worker.last_name}`.trim(),
     },
   }))
+  return paginated(items, count ?? 0, { page, pageSize })
 }
 
-export type SafetyFormListItem = Awaited<ReturnType<typeof listSafetyForms>>[number]
+export type SafetyFormListItem = Awaited<ReturnType<typeof listSafetyForms>>["items"][number]
 
 const DETAIL_COLUMNS = `
   *,

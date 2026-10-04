@@ -49,6 +49,7 @@ Also available as VS Code tasks (`Terminal → Run Task`).
 - Admins cannot fill in new safety forms, they are only responsible for reviewing them
 - There is no self sign-up - accounts are created in Supabase (dashboard or admin API)
 - A user's role comes from `role` in their `app_metadata` (`farmer` if unset), which only the admin API or SQL can change. Changing it updates their profile
+- Submissions grow into the tens of thousands, so lists are paged 25 at a time with numbered pages (`?page=`, kept alongside the filters). Offset paging with an exact count stays fast at that size; job sites and workers stay small enough to load whole
 
 ## Project structure
 

@@ -41,6 +41,7 @@ test-results/
 playwright-report/
 blob-report/
 playwright/.cache/
+e2e/.auth/
 cypress/videos/
 cypress/screenshots/
 

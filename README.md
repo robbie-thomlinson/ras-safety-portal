@@ -37,6 +37,7 @@ With Supabase running:
 
 - `npm test`: unit tests, component tests (jsdom) and integration tests against the local database
 - `npm run test:db`: the database RLS tests. These expect no forms in the database, so run `npm run db:reset` first if you've loaded demo data
+- `npm run test:e2e`: browser tests with Playwright (Chromium, desktop and phone). They build and start the app on port 3100, signed in as the seeded users. Each test creates its own `E2E Site …` job site and deletes it, with its forms and photos, afterwards. Run `npx playwright install chromium` once first, and use `npm run test:e2e:ui` to watch or debug them
 
 ### Scripts
 

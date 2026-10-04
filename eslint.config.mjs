@@ -19,6 +19,11 @@ const eslintConfig = defineConfig([
     files: ["scripts/**"],
     rules: { "no-console": "off" },
   },
+  {
+    // Playwright fixtures call `use()`, which the React rule mistakes for a hook.
+    files: ["e2e/**"],
+    rules: { "react-hooks/rules-of-hooks": "off" },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

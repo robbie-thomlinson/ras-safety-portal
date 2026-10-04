@@ -13,15 +13,17 @@ export type SearchSelectOption = { id: string | number; name: string; tag?: stri
 
 // A search box that picks one option: with a few hundred workers, scrolling a dropdown for one name is slow.
 // Empty means "all", so clearing the text clears the filter.
+// cmdk sets the input's id and aria-labelledby itself, so a <label htmlFor> can't reach it. `label` is
+// rendered as cmdk's own visually hidden label instead.
 export function SearchSelect({
-  id,
+  label,
   value,
   options,
   placeholder,
   onChange,
   className,
 }: {
-  id?: string
+  label: string
   value: string | number | undefined
   options: SearchSelectOption[]
   placeholder: string
@@ -52,6 +54,7 @@ export function SearchSelect({
 
   return (
     <Command
+      label={label}
       shouldFilter={false}
       className={cn("relative h-auto overflow-visible bg-transparent p-0", className)}
     >
@@ -60,7 +63,6 @@ export function SearchSelect({
           <SearchIcon />
         </InputGroupAddon>
         <CommandPrimitive.Input
-          id={id}
           data-slot="input-group-control"
           className="h-full min-w-0 flex-1 truncate bg-transparent pr-2.5 text-sm outline-none placeholder:text-muted-foreground"
           placeholder={placeholder}

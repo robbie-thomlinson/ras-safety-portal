@@ -88,9 +88,10 @@ export function SubmissionFilters({
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor="filter-site">Job site</FieldLabel>
+          {/* Visual only: SearchSelect names its input itself (see search-select.tsx). */}
+          <FieldLabel aria-hidden>Job site</FieldLabel>
           <SearchSelect
-            id="filter-site"
+            label="Job site"
             placeholder="All sites"
             value={filters.jobSiteId}
             options={siteOptions}
@@ -99,9 +100,9 @@ export function SubmissionFilters({
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor="filter-worker">Worker</FieldLabel>
+          <FieldLabel aria-hidden>Worker</FieldLabel>
           <SearchSelect
-            id="filter-worker"
+            label="Worker"
             placeholder="All workers"
             value={filters.workerId}
             options={workers}

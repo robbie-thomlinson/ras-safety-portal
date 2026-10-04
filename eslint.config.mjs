@@ -1,10 +1,24 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+import { defineConfig, globalIgnores } from "eslint/config"
+import nextVitals from "eslint-config-next/core-web-vitals"
+import nextTs from "eslint-config-next/typescript"
+import prettier from "eslint-config-prettier/flat"
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  // Turns off rules that conflict with Prettier, which owns formatting.
+  prettier,
+  {
+    rules: {
+      "@typescript-eslint/consistent-type-imports": ["error", { fixStyle: "inline-type-imports" }],
+      "no-console": ["error", { allow: ["warn", "error"] }],
+    },
+  },
+  {
+    // CLI scripts report progress on stdout.
+    files: ["scripts/**"],
+    rules: { "no-console": "off" },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
@@ -13,6 +27,6 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
-]);
+])
 
-export default eslintConfig;
+export default eslintConfig

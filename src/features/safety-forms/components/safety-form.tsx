@@ -7,10 +7,10 @@ import { Controller, useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 
 import { DatePicker } from "@/components/date-picker"
+import { SearchSelect } from "@/components/search-select"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Textarea } from "@/components/ui/textarea"
 
 import { submitSafetyFormAction } from "../actions"
@@ -85,25 +85,27 @@ export function SafetyForm({
         </CardHeader>
         <CardContent>
           <FieldGroup className="sm:flex-row">
-            <Field data-invalid={!!errors.jobSiteId}>
-              <FieldLabel htmlFor="jobSiteId">Job site</FieldLabel>
-              <NativeSelect
-                id="jobSiteId"
-                className="w-full [&>select]:h-10"
-                aria-invalid={!!errors.jobSiteId}
-                {...form.register("jobSiteId")}
-              >
-                <NativeSelectOption value="" disabled>
-                  Choose a job site
-                </NativeSelectOption>
-                {jobSites.map((site) => (
-                  <NativeSelectOption key={site.id} value={site.id}>
-                    {site.name}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-              <FieldError errors={[errors.jobSiteId]} />
-            </Field>
+            <Controller
+              control={form.control}
+              name="jobSiteId"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  {/* Visual only: SearchSelect names its input itself (see search-select.tsx). */}
+                  <FieldLabel aria-hidden>Job site</FieldLabel>
+                  <SearchSelect
+                    ref={field.ref}
+                    label="Job site"
+                    placeholder="Search job sites"
+                    value={String(field.value)}
+                    options={jobSites}
+                    onChange={(value) => field.onChange(value ?? "")}
+                    invalid={fieldState.invalid}
+                    className="w-full *:data-[slot=input-group]:h-10"
+                  />
+                  <FieldError errors={[fieldState.error]} />
+                </Field>
+              )}
+            />
             <Controller
               control={form.control}
               name="date"

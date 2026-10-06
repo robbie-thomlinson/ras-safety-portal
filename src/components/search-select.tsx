@@ -2,7 +2,7 @@
 
 import { Command as CommandPrimitive } from "cmdk"
 import { SearchIcon, XIcon } from "lucide-react"
-import { useState } from "react"
+import { useState, type Ref } from "react"
 
 import { Badge } from "@/components/ui/badge"
 import { Command, CommandEmpty, CommandItem, CommandList } from "@/components/ui/command"
@@ -11,8 +11,8 @@ import { cn } from "@/lib/utils"
 
 export type SearchSelectOption = { id: string | number; name: string; tag?: string }
 
-// A search box that picks one option: with a few hundred workers, scrolling a dropdown for one name is slow.
-// Empty means "all", so clearing the text clears the filter.
+// A search box that picks one option: with hundreds of workers or job sites, scrolling a dropdown for one
+// name is slow. Clearing the text clears the value (to "all" in a filter, or back to unanswered in a form).
 // cmdk sets the input's id and aria-labelledby itself, so a <label htmlFor> can't reach it. `label` is
 // rendered as cmdk's own visually hidden label instead.
 export function SearchSelect({
@@ -22,6 +22,8 @@ export function SearchSelect({
   placeholder,
   onChange,
   className,
+  invalid,
+  ref,
 }: {
   label: string
   value: string | number | undefined
@@ -29,6 +31,9 @@ export function SearchSelect({
   placeholder: string
   onChange: (value: string | undefined) => void
   className?: string
+  invalid?: boolean
+  // Lets react-hook-form focus the input when its field fails validation.
+  ref?: Ref<HTMLInputElement>
 }) {
   const [open, setOpen] = useState(false)
   // null while not typing, so the box shows the current selection.
@@ -63,7 +68,9 @@ export function SearchSelect({
           <SearchIcon />
         </InputGroupAddon>
         <CommandPrimitive.Input
+          ref={ref}
           data-slot="input-group-control"
+          aria-invalid={invalid}
           className="h-full min-w-0 flex-1 truncate bg-transparent pr-2.5 text-sm outline-none placeholder:text-muted-foreground"
           placeholder={placeholder}
           value={text}

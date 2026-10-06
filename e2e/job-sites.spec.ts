@@ -7,7 +7,9 @@ test("adds a site, and archiving it hides it from new forms", async ({ page, bro
   // Not the `site` fixture: this test creates its site through the UI. The global sweep deletes it.
   const name = uniqueSiteName()
   const framer = await (await browser.newContext(signedInAs("framer"))).newPage()
-  const framerSiteOptions = framer.getByLabel("Job site").getByRole("option", { name })
+  const framerSiteOptions = framer.getByRole("option", { name, exact: true })
+  // The job site picker only lists options while it's open, so search for the site first.
+  const searchFramerSites = () => framer.getByRole("combobox", { name: "Job site" }).fill(name)
 
   await page.goto("/sites")
   await page.getByRole("button", { name: "Add job site" }).click()
@@ -20,17 +22,21 @@ test("adds a site, and archiving it hides it from new forms", async ({ page, bro
   const row = page.getByRole("row").filter({ hasText: name })
   await expect(row).toContainText("Active")
   await framer.goto("/submissions/new")
+  await searchFramerSites()
   await expect(framerSiteOptions).toHaveCount(1)
 
   await row.getByRole("button", { name: "Archive" }).click()
   await expect(page.getByText("Job site archived")).toBeVisible()
   await framer.reload()
+  await searchFramerSites()
+  await expect(framer.getByText("No matches")).toBeVisible()
   await expect(framerSiteOptions).toHaveCount(0)
 
   await page.getByLabel("Status").selectOption("archived")
   await row.getByRole("button", { name: "Restore" }).click()
   await expect(page.getByText("Job site restored")).toBeVisible()
   await framer.reload()
+  await searchFramerSites()
   await expect(framerSiteOptions).toHaveCount(1)
   await framer.context().close()
 })

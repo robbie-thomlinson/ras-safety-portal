@@ -36,7 +36,8 @@ function renderForm() {
 }
 
 async function fillIn(user: ReturnType<typeof userEvent.setup>) {
-  await user.selectOptions(screen.getByLabelText("Job site"), "Happy Valley Residence")
+  await user.type(screen.getByRole("combobox", { name: "Job site" }), "valley")
+  await user.click(screen.getByRole("option", { name: "Happy Valley Residence" }))
   for (const group of screen.getAllByRole("radiogroup")) {
     await user.click(within(group).getByRole("radio", { name: "Yes" }))
   }

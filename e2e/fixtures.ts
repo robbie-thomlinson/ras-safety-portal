@@ -25,7 +25,8 @@ export async function fillSafetyForm(
   page: Page,
   { site, noItem, notes }: { site: Site; noItem?: string; notes?: string },
 ) {
-  await page.getByLabel("Job site").selectOption({ label: site.name })
+  await page.getByRole("combobox", { name: "Job site" }).fill(site.name)
+  await page.getByRole("option", { name: site.name, exact: true }).click()
   for (const item of Object.values(CHECKLIST_ITEMS)) {
     await page
       .getByRole("radiogroup", { name: item })

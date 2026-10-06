@@ -55,4 +55,15 @@ describe("getDashboardSummary", () => {
     expect(summary.perSite.find((s) => s.site === "Mount Newton Townhomes")?.count).toBe(1)
     expect(summary.missedItems).toEqual([{ item: "Hard hat worn", count: 1 }])
   })
+
+  it("only counts a framer's own forms, because the database function runs under RLS", async () => {
+    const otherFramer = await signIn("otherFramer")
+    const { data, error } = await otherFramer.rpc("dashboard_summary", {
+      p_from: TODAY,
+      p_to: TODAY,
+    })
+
+    expect(error).toBeNull()
+    expect(data).toMatchObject({ perDay: [], workersToday: [], withIssues: 0 })
+  })
 })

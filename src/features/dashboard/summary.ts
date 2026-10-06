@@ -1,15 +1,17 @@
 import { dateRange, formatDate } from "@/lib/dates"
 import { CHECKLIST_ITEMS, type ChecklistItem } from "@/features/safety-forms/schemas"
 
-export type SummaryForm = {
-  date: string
-  workerId: string
-  jobSiteId: number
-  checklist: Record<ChecklistItem, boolean>
+// What the dashboard_summary database function returns for the window.
+export type FormCounts = {
+  perDay: { date: string; count: number }[]
+  perSite: { jobSiteId: number; count: number }[]
+  workersToday: string[]
+  withIssues: number
+  missed: Record<ChecklistItem, number>
 }
 
 type Input = {
-  forms: SummaryForm[]
+  counts: FormCounts
   workers: { id: string; name: string }[]
   sites: { id: number; name: string; archivedAt: string | null }[]
   from: string
@@ -17,22 +19,23 @@ type Input = {
   awaitingReview: number
 }
 
-// Turns the last few weeks of forms into the numbers and chart series on the admin dashboard.
-export function summarize({ forms, workers, sites, from, today, awaitingReview }: Input) {
-  const todaysForms = forms.filter((f) => f.date === today)
-  const submittedToday = new Set(todaysForms.map((f) => f.workerId))
+// Turns the last few weeks of form counts into the numbers and chart series on the admin dashboard.
+export function summarize({ counts, workers, sites, from, today, awaitingReview }: Input) {
+  const perDayCount = new Map(counts.perDay.map((d) => [d.date, d.count]))
+  const perSiteCount = new Map(counts.perSite.map((s) => [s.jobSiteId, s.count]))
+  const submittedToday = new Set(counts.workersToday)
 
   const perDay = dateRange(from, today).map((date) => ({
     date,
     label: formatDate(date, "short"),
-    count: forms.filter((f) => f.date === date).length,
+    count: perDayCount.get(date) ?? 0,
   }))
 
   // Archived sites only appear if they still had forms in the window.
   const perSite = sites
     .map((site) => ({
       site: site.name,
-      count: forms.filter((f) => f.jobSiteId === site.id).length,
+      count: perSiteCount.get(site.id) ?? 0,
       archived: !!site.archivedAt,
     }))
     .filter((s) => !s.archived || s.count > 0)
@@ -42,7 +45,7 @@ export function summarize({ forms, workers, sites, from, today, awaitingReview }
   const missedItems = (Object.keys(CHECKLIST_ITEMS) as ChecklistItem[])
     .map((item) => ({
       item: CHECKLIST_ITEMS[item],
-      count: forms.filter((f) => !f.checklist[item]).length,
+      count: counts.missed[item],
     }))
     .filter((m) => m.count > 0)
     .sort((a, b) => b.count - a.count)
@@ -51,9 +54,9 @@ export function summarize({ forms, workers, sites, from, today, awaitingReview }
     from,
     today,
     totals: {
-      submittedToday: todaysForms.length,
+      submittedToday: perDayCount.get(today) ?? 0,
       awaitingReview,
-      formsWithIssues: forms.filter((f) => Object.values(f.checklist).includes(false)).length,
+      formsWithIssues: counts.withIssues,
       workers: workers.length,
     },
     notSubmittedToday: workers.filter((w) => !submittedToday.has(w.id)),

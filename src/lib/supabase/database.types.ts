@@ -105,7 +105,10 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "is_admin":
+            "dashboard_summary":
+{ Args: { "p_from": string,"p_to": string }; Returns: Json
+                           },
+"is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
 "submit_safety_form":

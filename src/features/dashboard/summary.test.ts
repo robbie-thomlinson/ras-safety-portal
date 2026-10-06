@@ -2,26 +2,12 @@ import { describe, expect, it } from "vitest"
 
 import { CHECKLIST_ITEMS, type ChecklistItem } from "@/features/safety-forms/schemas"
 
-import { summarize, type SummaryForm } from "./summary"
+import { summarize } from "./summary"
 
-const allYes = Object.fromEntries(Object.keys(CHECKLIST_ITEMS).map((k) => [k, true])) as Record<
+const noneMissed = Object.fromEntries(Object.keys(CHECKLIST_ITEMS).map((k) => [k, 0])) as Record<
   ChecklistItem,
-  boolean
+  number
 >
-
-function form(
-  date: string,
-  workerId: string,
-  jobSiteId: number,
-  no: ChecklistItem[] = [],
-): SummaryForm {
-  return {
-    date,
-    workerId,
-    jobSiteId,
-    checklist: { ...allYes, ...Object.fromEntries(no.map((k) => [k, false])) },
-  }
-}
 
 const workers = [
   { id: "frank", name: "Frank Framer" },
@@ -36,11 +22,21 @@ const sites = [
 ]
 
 const summary = summarize({
-  forms: [
-    form("2026-10-03", "frank", 1),
-    form("2026-10-03", "frank", 2, ["hardHatWorn"]),
-    form("2026-10-02", "priya", 1, ["hardHatWorn", "laddersInspected"]),
-  ],
+  // As if Frank sent two forms on Oct 3 (one missing a hard hat) and Priya one on Oct 2
+  // (missing a hard hat and ladders).
+  counts: {
+    perDay: [
+      { date: "2026-10-03", count: 2 },
+      { date: "2026-10-02", count: 1 },
+    ],
+    perSite: [
+      { jobSiteId: 1, count: 2 },
+      { jobSiteId: 2, count: 1 },
+    ],
+    workersToday: ["frank"],
+    withIssues: 2,
+    missed: { ...noneMissed, hardHatWorn: 2, laddersInspected: 1 },
+  },
   workers,
   sites,
   from: "2026-10-01",

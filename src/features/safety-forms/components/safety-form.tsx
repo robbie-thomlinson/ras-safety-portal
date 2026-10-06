@@ -79,7 +79,8 @@ export function SafetyForm({
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="flex flex-col gap-6">
-      <Card>
+      {/* Cards clip their contents; the job site search list has to hang out past this one. */}
+      <Card className="overflow-visible">
         <CardHeader>
           <CardTitle className="text-xl">Site and date</CardTitle>
         </CardHeader>

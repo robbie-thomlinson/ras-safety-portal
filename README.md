@@ -55,7 +55,7 @@ Also available as VS Code tasks (`Terminal → Run Task`).
 - RAS works in BC, so "today" means Vancouver time. Forms can't be dated in the future
 - There is no self sign-up - accounts are created in Supabase (dashboard or admin API)
 - A user's role comes from `role` in their `app_metadata` (`framer` if unset), which only the admin API or SQL can change. Changing it updates their profile
-- Submissions grow into the tens of thousands, so lists are paged 25 at a time with numbered pages (`?page=`, kept alongside the filters). Offset paging with an exact count stays fast at that size; job sites and workers stay small enough to load whole
+- Submissions grow into the tens of thousands. This was kept in mind for efficiency and UI related considerations
 
 ## Data model
 

@@ -42,7 +42,6 @@
 - Uses RAS branding (logo, colors, etc - generally adheres to style guidelines implied by their website)
 - Code quality
 - Understanding of code
--
 
 ### Deliverables
 
